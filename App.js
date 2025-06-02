@@ -5,6 +5,9 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, View, Text, ActivityIndicator, ScrollView, TouchableOpacity, SafeAreaView, Platform, Dimensions } from 'react-native';
 
+// 실제 구현된 화면들
+import InnerTalkScreen from './screens/InnerTalkScreen';
+
 const { height: screenHeight } = Dimensions.get('window');
 
 // 임시로 import 문제 해결을 위해 직접 정의
@@ -72,6 +75,17 @@ const HomeScreen = ({ navigation }) => (
       </View>
       
       <View style={styles.card}>
+        <Text style={styles.cardTitle}>🚀 새로운 기능 출시!</Text>
+        <Text style={styles.cardText}>Inner Talk 기능이 추가되었습니다! AI와 실제 대화를 나눠보세요.</Text>
+        <TouchableOpacity 
+          style={styles.cardButton}
+          onPress={() => navigation.navigate('InnerTalk')}
+        >
+          <Text style={styles.cardButtonText}>지금 체험하기 →</Text>
+        </TouchableOpacity>
+      </View>
+
+      <View style={styles.card}>
         <Text style={styles.cardTitle}>📈 이번 주 인사이트</Text>
         <Text style={styles.cardText}>전반적으로 안정된 감정 상태를 보이고 있어요.</Text>
       </View>
@@ -85,28 +99,6 @@ const HomeScreen = ({ navigation }) => (
         <Text style={styles.cardTitle}>💡 오늘의 팁</Text>
         <Text style={styles.cardText}>감정을 기록하는 것만으로도 마음이 정리되는 효과가 있어요.</Text>
       </View>
-    </ScrollView>
-  </View>
-);
-
-// 임시 화면 컴포넌트들
-const InnerTalkScreen = ({ navigation }) => (
-  <View style={styles.screenContainer}>
-    <ScrollView style={styles.scrollView} contentContainerStyle={styles.centerContent}>
-      <Text style={styles.title}>Inner Talk 💭</Text>
-      <Text style={styles.text}>AI와의 감정 대화 화면</Text>
-      <Text style={styles.devNote}>
-        • GPT 기반 감정 분석 및 공감 대화{'\n'}
-        • CBT 인지재구성 질문 시퀀스{'\n'}
-        • 실시간 감정 강도 측정
-      </Text>
-      
-      <TouchableOpacity 
-        style={styles.demoButton}
-        onPress={() => alert('곧 AI와 대화할 수 있게 됩니다!')}
-      >
-        <Text style={styles.demoButtonText}>AI와 대화 시작하기</Text>
-      </TouchableOpacity>
     </ScrollView>
   </View>
 );
@@ -168,7 +160,6 @@ function MainTabs() {
           paddingTop: 8,
           paddingBottom: Platform.OS === 'ios' ? 20 : 8,
           height: Platform.OS === 'ios' ? 80 : 60,
-          // position 속성을 제거하여 겹침 방지
         },
         tabBarActiveTintColor: APP_CONFIG.colors.primary,
         tabBarInactiveTintColor: APP_CONFIG.colors.textLight,
@@ -432,6 +423,20 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#718096',
     lineHeight: 18,
+    marginBottom: 8,
+  },
+  cardButton: {
+    backgroundColor: '#4A5568',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 8,
+    alignSelf: 'flex-start',
+    marginTop: 4,
+  },
+  cardButtonText: {
+    color: 'white',
+    fontSize: 14,
+    fontWeight: '500',
   },
   
   // 데모 버튼
