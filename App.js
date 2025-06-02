@@ -3,7 +3,9 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, View, Text, ActivityIndicator, ScrollView, TouchableOpacity, SafeAreaView, Platform } from 'react-native';
+import { StyleSheet, View, Text, ActivityIndicator, ScrollView, TouchableOpacity, SafeAreaView, Platform, Dimensions } from 'react-native';
+
+const { height: screenHeight } = Dimensions.get('window');
 
 // 임시로 import 문제 해결을 위해 직접 정의
 const APP_CONFIG = {
@@ -19,9 +21,9 @@ const APP_CONFIG = {
 
 // 임시 홈 화면 (HomeScreen import 오류 방지)
 const HomeScreen = ({ navigation }) => (
-  <SafeAreaView style={styles.safeArea}>
+  <View style={styles.screenContainer}>
     <ScrollView 
-      style={styles.container} 
+      style={styles.scrollView} 
       contentContainerStyle={styles.scrollContent}
       showsVerticalScrollIndicator={false}
     >
@@ -79,16 +81,18 @@ const HomeScreen = ({ navigation }) => (
         <Text style={styles.cardText}>아직 감정 기록이 없어요. 첫 번째 마음을 기록해보세요!</Text>
       </View>
 
-      {/* 하단 탭 네비게이션 공간 확보 */}
-      <View style={styles.bottomSpacer} />
+      <View style={styles.card}>
+        <Text style={styles.cardTitle}>💡 오늘의 팁</Text>
+        <Text style={styles.cardText}>감정을 기록하는 것만으로도 마음이 정리되는 효과가 있어요.</Text>
+      </View>
     </ScrollView>
-  </SafeAreaView>
+  </View>
 );
 
 // 임시 화면 컴포넌트들
 const InnerTalkScreen = ({ navigation }) => (
-  <SafeAreaView style={styles.safeArea}>
-    <ScrollView style={styles.container} contentContainerStyle={styles.centerContent}>
+  <View style={styles.screenContainer}>
+    <ScrollView style={styles.scrollView} contentContainerStyle={styles.centerContent}>
       <Text style={styles.title}>Inner Talk 💭</Text>
       <Text style={styles.text}>AI와의 감정 대화 화면</Text>
       <Text style={styles.devNote}>
@@ -104,12 +108,12 @@ const InnerTalkScreen = ({ navigation }) => (
         <Text style={styles.demoButtonText}>AI와 대화 시작하기</Text>
       </TouchableOpacity>
     </ScrollView>
-  </SafeAreaView>
+  </View>
 );
 
 const InsightsScreen = ({ navigation }) => (
-  <SafeAreaView style={styles.safeArea}>
-    <ScrollView style={styles.container} contentContainerStyle={styles.centerContent}>
+  <View style={styles.screenContainer}>
+    <ScrollView style={styles.scrollView} contentContainerStyle={styles.centerContent}>
       <Text style={styles.title}>Pal Insights 📊</Text>
       <Text style={styles.text}>감정 패턴 분석 및 인사이트</Text>
       <Text style={styles.devNote}>
@@ -125,12 +129,12 @@ const InsightsScreen = ({ navigation }) => (
         <Text style={styles.demoButtonText}>감정 패턴 보기</Text>
       </TouchableOpacity>
     </ScrollView>
-  </SafeAreaView>
+  </View>
 );
 
 const ProfileScreen = ({ navigation }) => (
-  <SafeAreaView style={styles.safeArea}>
-    <ScrollView style={styles.container} contentContainerStyle={styles.centerContent}>
+  <View style={styles.screenContainer}>
+    <ScrollView style={styles.scrollView} contentContainerStyle={styles.centerContent}>
       <Text style={styles.title}>프로필 ⚙️</Text>
       <Text style={styles.text}>사용자 설정 및 계정 관리</Text>
       <Text style={styles.devNote}>
@@ -146,7 +150,7 @@ const ProfileScreen = ({ navigation }) => (
         <Text style={styles.demoButtonText}>설정 열기</Text>
       </TouchableOpacity>
     </ScrollView>
-  </SafeAreaView>
+  </View>
 );
 
 const Stack = createStackNavigator();
@@ -162,12 +166,9 @@ function MainTabs() {
           borderTopColor: APP_CONFIG.colors.border,
           borderTopWidth: 1,
           paddingTop: 8,
-          paddingBottom: Platform.OS === 'ios' ? 25 : 8, // iOS에서 홈 인디케이터 공간 확보
-          height: Platform.OS === 'ios' ? 85 : 65,
-          position: 'absolute',
-          bottom: 0,
-          left: 0,
-          right: 0,
+          paddingBottom: Platform.OS === 'ios' ? 20 : 8,
+          height: Platform.OS === 'ios' ? 80 : 60,
+          // position 속성을 제거하여 겹침 방지
         },
         tabBarActiveTintColor: APP_CONFIG.colors.primary,
         tabBarInactiveTintColor: APP_CONFIG.colors.textLight,
@@ -186,7 +187,7 @@ function MainTabs() {
           fontWeight: '600',
           color: APP_CONFIG.colors.text,
         },
-        tabBarHideOnKeyboard: true, // 키보드가 나타날 때 탭바 숨김
+        tabBarHideOnKeyboard: true,
       }}
     >
       <Tab.Screen 
@@ -280,15 +281,17 @@ export default function App() {
   }
 
   return (
-    <NavigationContainer>
-      <StatusBar 
-        style="dark" 
-        backgroundColor={APP_CONFIG.colors.background} 
-      />
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="MainTabs" component={MainTabs} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <SafeAreaView style={styles.safeArea}>
+      <NavigationContainer>
+        <StatusBar 
+          style="dark" 
+          backgroundColor={APP_CONFIG.colors.background} 
+        />
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="MainTabs" component={MainTabs} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </SafeAreaView>
   );
 }
 
@@ -301,16 +304,30 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#FEFCF0',
   },
+  
+  // 화면 컨테이너 (탭바 공간 확보)
+  screenContainer: {
+    flex: 1,
+    backgroundColor: '#FEFCF0',
+    paddingBottom: Platform.OS === 'ios' ? 80 : 60, // 탭바 높이만큼 하단 패딩
+  },
+  
+  scrollView: {
+    flex: 1,
+  },
+  
   scrollContent: {
     paddingHorizontal: 20,
     paddingTop: 20,
+    paddingBottom: 20,
   },
+  
   centerContent: {
     flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 24,
-    paddingBottom: 100, // 탭바 공간 확보
+    paddingTop: 40,
   },
   
   // 헤더 스타일
@@ -435,10 +452,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     textAlign: 'center',
-  },
-  
-  // 하단 공간 확보
-  bottomSpacer: {
-    height: Platform.OS === 'ios' ? 100 : 80, // 탭바 높이만큼 여백
   },
 });
