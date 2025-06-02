@@ -4,24 +4,53 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, View, Text, ActivityIndicator } from 'react-native';
-import { supabase, auth } from './lib/supabase';
-import { APP_CONFIG } from './config/app';
 
-// 실제 화면 컴포넌트들
-import HomeScreen from './screens/HomeScreen';
+// 임시로 import 문제 해결을 위해 직접 정의
+const APP_CONFIG = {
+  colors: {
+    background: '#FEFCF0',
+    primary: '#4A5568',
+    textLight: '#718096',
+    text: '#2D3748',
+    border: '#E2E8F0',
+    textMuted: '#A0AEC0',
+  }
+};
 
-// 임시 화면 컴포넌트들 (추후 구현 예정)
-const AuthScreen = () => (
+// 임시 홈 화면 (HomeScreen import 오류 방지)
+const HomeScreen = () => (
   <View style={[styles.container, styles.center]}>
-    <Text style={styles.title}>Innerpal</Text>
-    <Text style={styles.subtitle}>Your inner friend, always</Text>
-    <Text style={styles.text}>인증 화면 구현 예정</Text>
-    <Text style={styles.devNote}>
-      개발 중: Supabase 인증 설정 후 실제 로그인 화면으로 교체됩니다
-    </Text>
+    <Text style={styles.title}>Innerpal 홈 🏠</Text>
+    <Text style={styles.subtitle}>안녕하세요! 👋</Text>
+    <Text style={styles.text}>오늘 마음은 어떠신가요?</Text>
+    
+    <View style={styles.quickActions}>
+      <View style={styles.actionButton}>
+        <Text style={styles.actionEmoji}>💭</Text>
+        <Text style={styles.actionText}>Inner Talk</Text>
+      </View>
+      <View style={styles.actionButton}>
+        <Text style={styles.actionEmoji}>📊</Text>
+        <Text style={styles.actionText}>감정 분석</Text>
+      </View>
+      <View style={styles.actionButton}>
+        <Text style={styles.actionEmoji}>🧘‍♀️</Text>
+        <Text style={styles.actionText}>마음 챙김</Text>
+      </View>
+      <View style={styles.actionButton}>
+        <Text style={styles.actionEmoji}>🤗</Text>
+        <Text style={styles.actionText}>응급 위로</Text>
+      </View>
+    </View>
+    
+    <View style={styles.card}>
+      <Text style={styles.cardTitle}>📈 이번 주 인사이트</Text>
+      <Text style={styles.cardText}>전반적으로 안정된 감정 상태를 보이고 있어요.</Text>
+    </View>
   </View>
 );
 
+// 임시 화면 컴포넌트들
 const InnerTalkScreen = () => (
   <View style={[styles.container, styles.center]}>
     <Text style={styles.title}>Inner Talk 💭</Text>
@@ -149,26 +178,13 @@ function MainTabs() {
 }
 
 export default function App() {
-  const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // 초기 세션 상태 확인
-    auth.getSession().then(({ session, error }) => {
-      if (!error) {
-        setSession(session);
-      }
+    // 개발 모드에서는 로딩을 빠르게 완료
+    setTimeout(() => {
       setLoading(false);
-    });
-
-    // 인증 상태 변화 리스너
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-    });
-
-    return () => subscription.unsubscribe();
+    }, 1500);
   }, []);
 
   // 로딩 화면
@@ -176,6 +192,7 @@ export default function App() {
     return (
       <View style={[styles.container, styles.center]}>
         <Text style={styles.logoText}>Innerpal</Text>
+        <Text style={styles.tagline}>Your inner friend, always</Text>
         <ActivityIndicator 
           size="large" 
           color={APP_CONFIG.colors.primary} 
@@ -195,13 +212,7 @@ export default function App() {
         backgroundColor={APP_CONFIG.colors.background} 
       />
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-        {/* 개발 중에는 항상 MainTabs를 보여줌 */}
-        {/* 추후 session 체크로 변경: {session ? ( */}
-        {true ? (
-          <Stack.Screen name="MainTabs" component={MainTabs} />
-        ) : (
-          <Stack.Screen name="Auth" component={AuthScreen} />
-        )}
+        <Stack.Screen name="MainTabs" component={MainTabs} />
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -210,45 +221,110 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: APP_CONFIG.colors.background,
+    backgroundColor: '#FEFCF0',
   },
   center: {
     justifyContent: 'center',
     alignItems: 'center',
-    padding: APP_CONFIG.spacing.lg,
+    padding: 24,
   },
   logoText: {
-    fontSize: APP_CONFIG.fonts.sizes.xxxl + 8,
+    fontSize: 42,
     fontWeight: 'bold',
-    color: APP_CONFIG.colors.primary,
+    color: '#4A5568',
     textAlign: 'center',
   },
+  tagline: {
+    fontSize: 16,
+    color: '#718096',
+    textAlign: 'center',
+    marginTop: 8,
+    fontStyle: 'italic',
+  },
   title: {
-    fontSize: APP_CONFIG.fonts.sizes.xxxl,
+    fontSize: 28,
     fontWeight: 'bold',
-    color: APP_CONFIG.colors.primary,
-    marginBottom: APP_CONFIG.spacing.sm,
+    color: '#4A5568',
+    marginBottom: 8,
     textAlign: 'center',
   },
   subtitle: {
-    fontSize: APP_CONFIG.fonts.sizes.lg,
-    color: APP_CONFIG.colors.textLight,
-    marginBottom: APP_CONFIG.spacing.md,
+    fontSize: 20,
+    color: '#718096',
+    marginBottom: 16,
     textAlign: 'center',
   },
   text: {
-    fontSize: APP_CONFIG.fonts.sizes.md,
-    color: APP_CONFIG.colors.text,
+    fontSize: 16,
+    color: '#2D3748',
     textAlign: 'center',
-    marginBottom: APP_CONFIG.spacing.sm,
+    marginBottom: 8,
   },
   devNote: {
-    fontSize: APP_CONFIG.fonts.sizes.sm,
-    color: APP_CONFIG.colors.textMuted,
+    fontSize: 14,
+    color: '#A0AEC0',
     textAlign: 'center',
     fontStyle: 'italic',
-    marginTop: APP_CONFIG.spacing.md,
-    paddingHorizontal: APP_CONFIG.spacing.lg,
+    marginTop: 16,
+    paddingHorizontal: 24,
     lineHeight: 20,
+  },
+  
+  // 홈 화면 스타일들
+  quickActions: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    marginVertical: 24,
+    paddingHorizontal: 20,
+  },
+  actionButton: {
+    width: '22%',
+    alignItems: 'center',
+    padding: 12,
+    backgroundColor: 'white',
+    borderRadius: 12,
+    marginBottom: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  actionEmoji: {
+    fontSize: 24,
+    marginBottom: 4,
+  },
+  actionText: {
+    fontSize: 10,
+    color: '#2D3748',
+    textAlign: 'center',
+    fontWeight: '500',
+  },
+  
+  card: {
+    backgroundColor: 'white',
+    borderRadius: 12,
+    padding: 16,
+    marginTop: 16,
+    marginHorizontal: 20,
+    borderLeftWidth: 4,
+    borderLeftColor: '#4A5568',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  cardTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#2D3748',
+    marginBottom: 8,
+  },
+  cardText: {
+    fontSize: 14,
+    color: '#718096',
+    lineHeight: 18,
   },
 });
