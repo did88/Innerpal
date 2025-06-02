@@ -7,6 +7,7 @@ import { StyleSheet, View, Text, ActivityIndicator, ScrollView, TouchableOpacity
 
 // 실제 구현된 화면들
 import InnerTalkScreen from './screens/InnerTalkScreen';
+import ApiTestScreen from './screens/ApiTestScreen';
 
 const { height: screenHeight } = Dimensions.get('window');
 
@@ -57,11 +58,11 @@ const HomeScreen = ({ navigation }) => (
         
         <TouchableOpacity 
           style={styles.actionButton}
-          onPress={() => alert('마음 챙김 기능 개발 중입니다!')}
+          onPress={() => navigation.navigate('ApiTest')}
           activeOpacity={0.7}
         >
-          <Text style={styles.actionEmoji}>🧘‍♀️</Text>
-          <Text style={styles.actionText}>마음 챙김</Text>
+          <Text style={styles.actionEmoji}>🔧</Text>
+          <Text style={styles.actionText}>API 테스트</Text>
         </TouchableOpacity>
         
         <TouchableOpacity 
@@ -82,6 +83,17 @@ const HomeScreen = ({ navigation }) => (
           onPress={() => navigation.navigate('InnerTalk')}
         >
           <Text style={styles.cardButtonText}>지금 체험하기 →</Text>
+        </TouchableOpacity>
+      </View>
+
+      <View style={styles.card}>
+        <Text style={styles.cardTitle}>🔧 API 연결 테스트</Text>
+        <Text style={styles.cardText}>Supabase와 OpenAI API 연결 상태를 확인해보세요.</Text>
+        <TouchableOpacity 
+          style={styles.cardButton}
+          onPress={() => navigation.navigate('ApiTest')}
+        >
+          <Text style={styles.cardButtonText}>테스트 실행 →</Text>
         </TouchableOpacity>
       </View>
 
@@ -140,6 +152,13 @@ const ProfileScreen = ({ navigation }) => (
         onPress={() => alert('프로필 설정 기능을 개발 중입니다!')}
       >
         <Text style={styles.demoButtonText}>설정 열기</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity 
+        style={[styles.demoButton, { backgroundColor: '#ED8936', marginTop: 12 }]}
+        onPress={() => navigation.navigate('ApiTest')}
+      >
+        <Text style={styles.demoButtonText}>🔧 API 테스트</Text>
       </TouchableOpacity>
     </ScrollView>
   </View>
@@ -280,6 +299,22 @@ export default function App() {
         />
         <Stack.Navigator screenOptions={{ headerShown: false }}>
           <Stack.Screen name="MainTabs" component={MainTabs} />
+          <Stack.Screen 
+            name="ApiTest" 
+            component={ApiTestScreen}
+            options={{
+              headerShown: true,
+              title: 'API 연결 테스트',
+              headerStyle: {
+                backgroundColor: APP_CONFIG.colors.background,
+              },
+              headerTitleStyle: {
+                color: APP_CONFIG.colors.text,
+                fontWeight: '600',
+              },
+              headerTintColor: APP_CONFIG.colors.primary,
+            }}
+          />
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaView>
