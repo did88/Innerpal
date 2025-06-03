@@ -105,7 +105,7 @@ const EmotionAnalysisScreen = ({ navigation }) => {
         style={styles.headerGradient}
       >
         <View style={styles.header}>
-          <Text style={styles.title}>🧢0 감정 분석</Text>
+          <Text style={styles.title}>🧠 감정 분석</Text>
           <Text style={styles.subtitle}>당신의 마음을 이해해보세요</Text>
         </View>
       </LinearGradient>
