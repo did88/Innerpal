@@ -193,6 +193,18 @@ const EmotionAnalysisScreen = ({ navigation }) => {
                   </View>
                 ))}
             </View>
+
+            <TouchableOpacity
+              style={styles.viewResultButton}
+              onPress={() => navigation.navigate('EmotionResultScreen', { result: analysisResult })}
+            >
+              <LinearGradient
+                colors={['#7C3AED', '#A855F7']}
+                style={styles.buttonGradient}
+              >
+                <Text style={styles.viewResultText}>📈 시각화 보기</Text>
+              </LinearGradient>
+            </TouchableOpacity>
           </Animated.View>
         )}
       </View>
@@ -249,7 +261,9 @@ const styles = StyleSheet.create({
     textAlign: 'center', borderRadius: 10, fontSize: 12, fontWeight: '600',
     marginRight: 12, lineHeight: 20
   },
-  recommendationText: { flex: 1, fontSize: 14, color: '#374151', lineHeight: 20 }
+  recommendationText: { flex: 1, fontSize: 14, color: '#374151', lineHeight: 20 },
+  viewResultButton: { marginTop: 16, borderRadius: 12, overflow: 'hidden' },
+  viewResultText: { fontSize: 16, fontWeight: '600', color: 'white' }
 });
 
 export default EmotionAnalysisScreen;

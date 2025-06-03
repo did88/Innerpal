@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, Dimensions } from 'react-native';
-import { PieChart } from 'react-native-chart-kit';
+import { PieChart, LineChart } from 'react-native-chart-kit';
+import { emotionAnalyzer } from '../utils/emotionAnalyzer';
 
 const EmotionResultScreen = ({ route }) => {
   const { emotions, dominantEmotion, recommendations, emotionScore } = route.params.result;
@@ -12,6 +13,20 @@ const EmotionResultScreen = ({ route }) => {
     legendFontColor: '#333',
     legendFontSize: 14,
   }));
+
+  const history = emotionAnalyzer.emotionHistory.slice(-7);
+  const lineData = {
+    labels: history.map(item => item.date.slice(5)),
+    datasets: [
+      {
+        data: history.map(item =>
+          emotionAnalyzer.calculateEmotionScore(item.emotions)
+        ),
+        color: () => '#7C3AED',
+        strokeWidth: 2,
+      },
+    ],
+  };
 
   return (
     <View style={styles.container}>
@@ -28,6 +43,20 @@ const EmotionResultScreen = ({ route }) => {
         center={[10, 10]}
         absolute
       />
+
+      {history.length > 1 && (
+        <>
+          <Text style={styles.historyTitle}>최근 감정 점수 추이</Text>
+          <LineChart
+            data={lineData}
+            width={Dimensions.get('window').width - 40}
+            height={220}
+            chartConfig={chartConfig}
+            bezier
+            style={{ marginVertical: 8 }}
+          />
+        </>
+      )}
 
       <Text style={styles.dominantText}>주된 감정: {dominantEmotion}</Text>
       <Text style={styles.scoreText}>감정 점수: {emotionScore.toFixed(2)}점</Text>
@@ -68,6 +97,13 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     marginTop: 16,
     color: '#7C3AED',
+  },
+  historyTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginTop: 24,
+    marginBottom: 8,
+    color: '#374151',
   },
   scoreText: {
     fontSize: 16,

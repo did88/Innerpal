@@ -131,7 +131,7 @@ const recommendations = emotionAnalyzer.generateRecommendations(emotions);
 ## 🔮 향후 계획
 
 ### 단기 목표 (1-2개월)
-- [ ] 감정 히스토리 차트 추가
+- [x] 감정 히스토리 차트 추가
 - [ ] 다국어 지원 (영어)
 - [ ] 오프라인 저장 기능
 - [ ] 알림 및 리마인더
