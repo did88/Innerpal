@@ -162,8 +162,8 @@ MIT License - 자세한 내용은 [LICENSE](LICENSE) 파일을 참조하세요.
 
 ## 📞 문의
 
-- **개발자**: [did88](https://github.com/did88)
-- **이메일**: your.email@example.com
+- **개발자**: [양원석](https://github.com/did88)
+- **이메일**: wsryang@gmail.com
 - **프로젝트 링크**: [https://github.com/did88/Innerpal](https://github.com/did88/Innerpal)
 
 ---
