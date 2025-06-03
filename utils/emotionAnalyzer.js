@@ -14,8 +14,14 @@ export class EmotionAnalyzer {
     // 백분율 정규화 (총합 100 기준 → 0~1 스케일)
     const total = Object.values(rawEmotions).reduce((sum, val) => sum + val, 0);
     const normalizedEmotions = {};
-    for (const [key, value] of Object.entries(rawEmotions)) {
-      normalizedEmotions[key] = value / total;
+    if (total === 0) {
+      for (const key of Object.keys(rawEmotions)) {
+        normalizedEmotions[key] = 0;
+      }
+    } else {
+      for (const [key, value] of Object.entries(rawEmotions)) {
+        normalizedEmotions[key] = value / total;
+      }
     }
 
     const dominantEmotion = Object.keys(normalizedEmotions).reduce((a, b) =>
