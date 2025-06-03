@@ -12,7 +12,6 @@ import { APP_CONFIG } from './config/app';
 // 화면 컴포넌트들
 import HomeScreen from './screens/HomeScreen';
 import InnerTalkScreen from './screens/InnerTalkScreen';
-import ApiTestScreen from './screens/ApiTestScreen';
 import EmotionAnalysisScreen from './screens/EmotionAnalysisScreen';
 
 const Stack = createStackNavigator();
@@ -73,24 +72,15 @@ const ProfileScreen = ({ navigation }) => (
           colors={['#F59E0B', '#EF4444']}
           style={styles.iconGradient}
         >
-          <Text style={styles.headerEmoji}>⚙️</Text>
+          <Text style={styles.headerEmoji}>👤</Text>
         </LinearGradient>
-        <Text style={styles.title}>프로필 설정</Text>
-        <Text style={styles.subtitle}>사용자 설정 및 계정 관리</Text>
+        <Text style={styles.title}>내 프로필</Text>
+        <Text style={styles.subtitle}>개인 설정 및 데이터 관리</Text>
       </View>
       
-      <TouchableOpacity 
-        style={styles.modernButton}
-        onPress={() => navigation.navigate('ApiTest')}
-      >
-        <LinearGradient
-          colors={['#6B7280', '#4B5563']}
-          style={styles.buttonGradient}
-        >
-          <Text style={styles.buttonText}>개발자 도구</Text>
-          <Text style={styles.buttonEmoji}>🔧</Text>
-        </LinearGradient>
-      </TouchableOpacity>
+      <View style={styles.profileContent}>
+        <Text style={styles.comingSoonText}>프로필 기능이 곧 업데이트됩니다 ✨</Text>
+      </View>
     </ScrollView>
   </View>
 );
@@ -224,28 +214,6 @@ export default function App() {
             options={{
               headerShown: true,
               title: '감정 분석',
-              headerStyle: {
-                backgroundColor: '#FEFCF0',
-                shadowColor: '#000',
-                shadowOffset: { width: 0, height: 1 },
-                shadowOpacity: 0.1,
-                shadowRadius: 4,
-                elevation: 4,
-              },
-              headerTitleStyle: {
-                color: '#1F2937',
-                fontWeight: '600',
-                fontSize: 18,
-              },
-              headerTintColor: '#7C3AED',
-            }}
-          />
-          <Stack.Screen 
-            name="ApiTest" 
-            component={ApiTestScreen}
-            options={{
-              headerShown: true,
-              title: 'API 연결 테스트',
               headerStyle: {
                 backgroundColor: '#FEFCF0',
                 shadowColor: '#000',
@@ -423,6 +391,19 @@ const styles = StyleSheet.create({
   
   buttonEmoji: {
     fontSize: 16,
+  },
+  
+  // 프로필 화면 추가 스타일
+  profileContent: {
+    alignItems: 'center',
+    padding: 24,
+  },
+  
+  comingSoonText: {
+    fontSize: 16,
+    color: '#6B7280',
+    textAlign: 'center',
+    fontStyle: 'italic',
   },
   
   // 탭 아이콘 스타일
