@@ -3,15 +3,15 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, View, Text, ActivityIndicator, ScrollView, TouchableOpacity, SafeAreaView, Platform, Dimensions } from 'react-native';
+import { StyleSheet, View, Text, ActivityIndicator, ScrollView, TouchableOpacity, SafeAreaView, Platform } from 'react-native';
 
-// 실제 구현된 화면들
+// 화면 import
 import InnerTalkScreen from './screens/InnerTalkScreen';
 import ApiTestScreen from './screens/ApiTestScreen';
+import EmotionInputScreen from './screens/EmotionInputScreen';
+import CBTSessionScreen from './screens/CBTSessionScreen';
+import CBTInsightsScreen from './screens/CBTInsightsScreen';
 
-const { height: screenHeight } = Dimensions.get('window');
-
-// 임시로 import 문제 해결을 위해 직접 정의
 const APP_CONFIG = {
   colors: {
     background: '#FEFCF0',
@@ -23,7 +23,7 @@ const APP_CONFIG = {
   }
 };
 
-// 임시 홈 화면 (HomeScreen import 오류 방지)
+// 홈 화면
 const HomeScreen = ({ navigation }) => (
   <View style={styles.screenContainer}>
     <ScrollView 
@@ -38,6 +38,15 @@ const HomeScreen = ({ navigation }) => (
       </View>
       
       <View style={styles.quickActions}>
+        <TouchableOpacity 
+          style={styles.actionButton}
+          onPress={() => navigation.navigate('EmotionInput')}
+          activeOpacity={0.7}
+        >
+          <Text style={styles.actionEmoji}>📝</Text>
+          <Text style={styles.actionText}>감정 기록</Text>
+        </TouchableOpacity>
+        
         <TouchableOpacity 
           style={styles.actionButton}
           onPress={() => navigation.navigate('InnerTalk')}
@@ -58,58 +67,34 @@ const HomeScreen = ({ navigation }) => (
         
         <TouchableOpacity 
           style={styles.actionButton}
-          onPress={() => navigation.navigate('ApiTest')}
+          onPress={() => alert('CBT 가이드를 시작하려면 먼저 감정을 기록해주세요!')}
           activeOpacity={0.7}
         >
-          <Text style={styles.actionEmoji}>🔧</Text>
-          <Text style={styles.actionText}>API 테스트</Text>
-        </TouchableOpacity>
-        
-        <TouchableOpacity 
-          style={styles.actionButton}
-          onPress={() => alert('응급 위로 기능 개발 중입니다!')}
-          activeOpacity={0.7}
-        >
-          <Text style={styles.actionEmoji}>🤗</Text>
-          <Text style={styles.actionText}>응급 위로</Text>
+          <Text style={styles.actionEmoji}>🧠</Text>
+          <Text style={styles.actionText}>CBT 가이드</Text>
         </TouchableOpacity>
       </View>
       
       <View style={styles.card}>
-        <Text style={styles.cardTitle}>🚀 새로운 기능 출시!</Text>
-        <Text style={styles.cardText}>Inner Talk 기능이 추가되었습니다! AI와 실제 대화를 나눠보세요.</Text>
+        <Text style={styles.cardTitle}>🎉 새로운 기능 출시!</Text>
+        <Text style={styles.cardText}>감정 입력 폼과 CBT 가이드 기능이 추가되었습니다!</Text>
         <TouchableOpacity 
           style={styles.cardButton}
-          onPress={() => navigation.navigate('InnerTalk')}
+          onPress={() => navigation.navigate('EmotionInput')}
         >
-          <Text style={styles.cardButtonText}>지금 체험하기 →</Text>
+          <Text style={styles.cardButtonText}>감정 기록하기 →</Text>
         </TouchableOpacity>
       </View>
 
       <View style={styles.card}>
-        <Text style={styles.cardTitle}>🔧 API 연결 테스트</Text>
-        <Text style={styles.cardText}>Supabase와 OpenAI API 연결 상태를 확인해보세요.</Text>
+        <Text style={styles.cardTitle}>🧠 CBT 인지행동치료</Text>
+        <Text style={styles.cardText}>전문적인 CBT 가이드를 통해 감정을 건강하게 관리해보세요.</Text>
         <TouchableOpacity 
           style={styles.cardButton}
-          onPress={() => navigation.navigate('ApiTest')}
+          onPress={() => navigation.navigate('EmotionInput')}
         >
-          <Text style={styles.cardButtonText}>테스트 실행 →</Text>
+          <Text style={styles.cardButtonText}>시작하기 →</Text>
         </TouchableOpacity>
-      </View>
-
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>📈 이번 주 인사이트</Text>
-        <Text style={styles.cardText}>전반적으로 안정된 감정 상태를 보이고 있어요.</Text>
-      </View>
-
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>🔍 최근 기록</Text>
-        <Text style={styles.cardText}>아직 감정 기록이 없어요. 첫 번째 마음을 기록해보세요!</Text>
-      </View>
-
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>💡 오늘의 팁</Text>
-        <Text style={styles.cardText}>감정을 기록하는 것만으로도 마음이 정리되는 효과가 있어요.</Text>
       </View>
     </ScrollView>
   </View>
@@ -167,7 +152,6 @@ const ProfileScreen = ({ navigation }) => (
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
-// 메인 탭 네비게이터
 function MainTabs() {
   return (
     <Tab.Navigator
@@ -187,16 +171,7 @@ function MainTabs() {
           fontWeight: '500',
           marginBottom: Platform.OS === 'ios' ? 0 : 4,
         },
-        headerStyle: {
-          backgroundColor: APP_CONFIG.colors.background,
-          borderBottomColor: APP_CONFIG.colors.border,
-          borderBottomWidth: 1,
-        },
-        headerTitleStyle: {
-          fontSize: 18,
-          fontWeight: '600',
-          color: APP_CONFIG.colors.text,
-        },
+        headerShown: false,
         tabBarHideOnKeyboard: true,
       }}
     >
@@ -205,10 +180,8 @@ function MainTabs() {
         component={HomeScreen}
         options={{ 
           title: '홈',
-          tabBarLabel: '홈',
-          headerShown: false,
-          tabBarIcon: ({ focused, color, size }) => (
-            <Text style={{ fontSize: size, color }}>
+          tabBarIcon: ({ focused }) => (
+            <Text style={{ fontSize: 20 }}>
               {focused ? '🏠' : '🏡'}
             </Text>
           ),
@@ -218,11 +191,9 @@ function MainTabs() {
         name="InnerTalk" 
         component={InnerTalkScreen}
         options={{ 
-          title: 'Inner Talk',
-          tabBarLabel: '대화',
-          headerShown: false,
-          tabBarIcon: ({ focused, color, size }) => (
-            <Text style={{ fontSize: size, color }}>
+          title: '대화',
+          tabBarIcon: ({ focused }) => (
+            <Text style={{ fontSize: 20 }}>
               {focused ? '💭' : '💬'}
             </Text>
           ),
@@ -232,11 +203,9 @@ function MainTabs() {
         name="Insights" 
         component={InsightsScreen}
         options={{ 
-          title: 'Pal Insights',
-          tabBarLabel: '분석',
-          headerShown: false,
-          tabBarIcon: ({ focused, color, size }) => (
-            <Text style={{ fontSize: size, color }}>
+          title: '분석',
+          tabBarIcon: ({ focused }) => (
+            <Text style={{ fontSize: 20 }}>
               {focused ? '📊' : '📈'}
             </Text>
           ),
@@ -247,10 +216,8 @@ function MainTabs() {
         component={ProfileScreen}
         options={{ 
           title: '프로필',
-          tabBarLabel: '프로필',
-          headerShown: false,
-          tabBarIcon: ({ focused, color, size }) => (
-            <Text style={{ fontSize: size, color }}>
+          tabBarIcon: ({ focused }) => (
+            <Text style={{ fontSize: 20 }}>
               {focused ? '👤' : '👥'}
             </Text>
           ),
@@ -264,13 +231,11 @@ export default function App() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // 개발 모드에서는 로딩을 빠르게 완료
     setTimeout(() => {
       setLoading(false);
     }, 1500);
   }, []);
 
-  // 로딩 화면
   if (loading) {
     return (
       <SafeAreaView style={styles.safeArea}>
@@ -299,6 +264,30 @@ export default function App() {
         />
         <Stack.Navigator screenOptions={{ headerShown: false }}>
           <Stack.Screen name="MainTabs" component={MainTabs} />
+          <Stack.Screen 
+            name="EmotionInput" 
+            component={EmotionInputScreen}
+            options={{
+              headerShown: false,
+              presentation: 'modal'
+            }}
+          />
+          <Stack.Screen 
+            name="CBTSession" 
+            component={CBTSessionScreen}
+            options={{
+              headerShown: false,
+              presentation: 'fullScreenModal'
+            }}
+          />
+          <Stack.Screen 
+            name="CBTInsights" 
+            component={CBTInsightsScreen}
+            options={{
+              headerShown: false,
+              presentation: 'modal'
+            }}
+          />
           <Stack.Screen 
             name="ApiTest" 
             component={ApiTestScreen}
@@ -331,11 +320,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#FEFCF0',
   },
   
-  // 화면 컨테이너 (탭바 공간 확보)
   screenContainer: {
     flex: 1,
     backgroundColor: '#FEFCF0',
-    paddingBottom: Platform.OS === 'ios' ? 80 : 60, // 탭바 높이만큼 하단 패딩
+    paddingBottom: Platform.OS === 'ios' ? 80 : 60,
   },
   
   scrollView: {
@@ -356,7 +344,6 @@ const styles = StyleSheet.create({
     paddingTop: 40,
   },
   
-  // 헤더 스타일
   header: {
     alignItems: 'center',
     marginBottom: 24,
@@ -403,7 +390,6 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   
-  // 홈 화면 스타일들
   quickActions: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -434,7 +420,6 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   
-  // 카드 스타일
   card: {
     backgroundColor: 'white',
     borderRadius: 12,
@@ -474,7 +459,6 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   
-  // 데모 버튼
   demoButton: {
     backgroundColor: '#4A5568',
     paddingHorizontal: 24,
