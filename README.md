@@ -133,8 +133,8 @@ const recommendations = emotionAnalyzer.generateRecommendations(emotions);
 ### 단기 목표 (1-2개월)
 - [x] 감정 히스토리 차트 추가
 - [ ] 다국어 지원 (영어)
-- [ ] 오프라인 저장 기능
-- [ ] 알림 및 리마인더
+- [x] 오프라인 저장 기능
+- [x] 알림 및 리마인더
 
 ### 중기 목표 (3-6개월)
 - [x] 고급 NLP 모델 통합 (GPT-4)

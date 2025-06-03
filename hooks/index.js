@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { auth, database } from '../lib/supabase';
 import { devUtils } from '../utils';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 /**
  * 인증 관련 훅
@@ -241,21 +242,26 @@ export const useProfile = (userId) => {
  * 로컬 상태 관리 훅
  */
 export const useLocalState = (key, initialValue) => {
-  const [state, setState] = useState(() => {
-    try {
-      // AsyncStorage는 React Native에서 비동기이므로 초기값 사용
-      return initialValue;
-    } catch (error) {
-      devUtils.log('Local state error:', error);
-      return initialValue;
-    }
-  });
+  const [state, setState] = useState(initialValue);
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const saved = await AsyncStorage.getItem(`innerpal_state_${key}`);
+        if (saved !== null) {
+          setState(JSON.parse(saved));
+        }
+      } catch (error) {
+        devUtils.log('Local state load error:', error);
+      }
+    };
+    load();
+  }, [key]);
 
   const setValue = useCallback(async (value) => {
     try {
       setState(value);
-      // 실제 AsyncStorage 저장은 추후 구현
-      // await AsyncStorage.setItem(key, JSON.stringify(value));
+      await AsyncStorage.setItem(`innerpal_state_${key}`, JSON.stringify(value));
     } catch (error) {
       devUtils.log('Set local state error:', error);
     }
