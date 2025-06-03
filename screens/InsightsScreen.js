@@ -13,7 +13,7 @@ import { useNavigation } from '@react-navigation/native';
 import { database } from '../lib/supabase';
 import openAIService from '../services/openai';
 
-const InnerTalkScreen = ({ route }) => {
+const InsightsScreen = ({ route }) => {
   const navigation = useNavigation();
   const { initialEmotion } = route.params || {};
 
@@ -184,4 +184,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default InnerTalkScreen;
+export default InsightsScreen;
