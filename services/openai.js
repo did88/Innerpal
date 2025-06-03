@@ -61,3 +61,73 @@ export const getEmotionSummary = async (text) => {
     return null;
   }
 };
+
+/**
+ * 대화형 AI 응답 생성
+ * @param {Array<{role: string, content: string}>} messages 대화 기록
+ * @returns {Promise<{success: boolean, data?: string}>}
+ */
+export const innerTalk = async (messages = []) => {
+  const systemPrompt = '당신은 공감해주는 상담사입니다. 사용자의 고민이나 생각을 듣고 두 문단 이내의 따뜻한 한국어 답변을 제공합니다.';
+
+  try {
+    const res = await global.fetch(OPENAI_API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${OPENAI_API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: 'gpt-3.5-turbo',
+        messages: [
+          { role: 'system', content: systemPrompt },
+          ...messages,
+        ],
+        temperature: 0.7,
+      }),
+    });
+
+    const data = await res.json();
+    const reply = data?.choices?.[0]?.message?.content?.trim();
+    return reply ? { success: true, data: reply } : { success: false };
+  } catch (err) {
+    console.error('innerTalk 오류:', err);
+    return { success: false };
+  }
+};
+
+/**
+ * CBT 세션 인사이트 생성
+ * @param {Object} sessionData - 세션 데이터
+ * @returns {Promise<{success: boolean, insights?: string}>}
+ */
+export const generateCBTInsights = async (sessionData) => {
+  const systemPrompt = '다음 사용자의 CBT 세션 기록을 바탕으로 주요 인지 왜곡과 개선 방향을 간결하게 한국어로 요약해 주세요.';
+
+  try {
+    const res = await global.fetch(OPENAI_API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${OPENAI_API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: 'gpt-3.5-turbo',
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: JSON.stringify(sessionData) },
+        ],
+        temperature: 0.7,
+      }),
+    });
+
+    const data = await res.json();
+    const reply = data?.choices?.[0]?.message?.content?.trim();
+    return reply ? { success: true, insights: reply } : { success: false };
+  } catch (err) {
+    console.error('generateCBTInsights 오류:', err);
+    return { success: false };
+  }
+};
+
+export default { getEmotionSummary, innerTalk, generateCBTInsights };
