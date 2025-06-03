@@ -32,13 +32,13 @@ export class EmotionAnalyzer {
 
   calculateEmotionScore(emotions) {
     const WEIGHTS = {
-      기쁨: +1,
-      슬픔: -1,
-      분노: -1,
-      두려움: -0.8,
-      혐오: -0.9,
-      놀람: 0,
-      중립: 0
+      joy: +1,
+      sadness: -1,
+      anger: -1,
+      fear: -0.8,
+      disgust: -0.9,
+      surprise: 0,
+      neutral: 0
     };
     return Object.entries(emotions).reduce((score, [emotion, value]) => {
       return score + value * (WEIGHTS[emotion] || 0);
