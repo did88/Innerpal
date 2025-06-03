@@ -7,7 +7,9 @@ import {
   TouchableOpacity,
   ScrollView,
   SafeAreaView,
-  ActivityIndicator
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { database } from '../lib/supabase';
@@ -71,7 +73,12 @@ const InnerTalkScreen = ({ route }) => {
   );
 
   return (
-    <SafeAreaView style={styles.container}>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 20 : 0}
+    >
+      <SafeAreaView style={styles.container}>
       <Text style={styles.title}>내면 대화</Text>
       <ScrollView
         style={styles.scrollView}
@@ -104,6 +111,7 @@ const InnerTalkScreen = ({ route }) => {
         </TouchableOpacity>
       </View>
     </SafeAreaView>
+    </KeyboardAvoidingView>
   );
 };
 
