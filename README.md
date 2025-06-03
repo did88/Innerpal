@@ -14,321 +14,258 @@ Innerpal은 다음과 같은 차별화된 기능을 제공합니다:
 - **🇰🇷 한국어 특화**: 한국인의 감정 표현 방식에 최적화된 AI 모델
 - **🔒 프라이버시 우선**: 안전하고 익명적인 감정 기록 환경
 
-## 🚀 기술 스택
+## 🚀 최신 업데이트 (Week 3-4)
 
-### Frontend
-- **React Native**: 크로스 플랫폼 모바일 개발
-- **Expo**: 개발 도구 및 배포 플랫폼
-- **React Navigation**: 네비게이션 시스템
+### ✨ 새로 추가된 핵심 기능들
 
-### Backend & AI
-- **Supabase**: 실시간 데이터베이스 및 인증
-- **OpenAI GPT-4**: 감정 분석 및 대화 생성
-- **PostgreSQL**: 감정 데이터 저장 및 분석
+#### 1. 📝 감정 입력 폼 (EmotionInputScreen)
+- **직관적인 감정 선택**: 7가지 감정 카드로 쉬운 선택
+- **감정 강도 조절**: 1-5단계 강도 설정
+- **상황 태그**: 18개 일반적 상황 태그 선택
+- **자유 텍스트**: 1000자 제한 감정 표현
+- **실시간 검증**: 사용자 친화적 입력 가이드
 
-### 핵심 라이브러리
-- **React Hook Form**: 폼 관리
-- **React Native Elements**: UI 컴포넌트
-- **Chart Kit**: 데이터 시각화
-- **Date-fns**: 날짜 처리
+#### 2. 🧠 CBT 가이드 시스템 (CBTSessionScreen)
+**전문적인 4단계 인지행동치료 프로세스:**
+- **생각 인식** → **증거 탐색** → **대안적 사고** → **행동 계획**
+- 진행도 표시 및 애니메이션
+- 맞춤형 질문 시퀀스 (텍스트/척도 입력)
+- 단계별 도움말 및 팁 제공
+
+#### 3. 💡 CBT 인사이트 (CBTInsightsScreen)  
+- **성장 지표**: Before/After 기분 변화 시각화
+- **개인화된 분석**: AI 기반 패턴 인사이트
+- **세션 요약**: 확장 가능한 답변 리뷰
+- **추천 활동**: 다음 단계 가이드
+
+#### 4. 💭 Inner Talk 개선
+- **컨텍스트 인식 대화**: 대화 깊이별 차별화된 AI 응답
+- **CBT 자동 제안**: 깊은 대화 후 CBT 가이드 연결
+- **빠른 응답 버튼**: 감정별 맞춤 응답
+- **실시간 감정 태그**: 현재 감정 상태 표시
+
+## 🎯 핵심 기능 플로우
+
+### 완전한 감정 관리 여정
+```
+홈 화면 → 감정 기록 → Inner Talk → CBT 가이드 → 인사이트 → 성장
+   ↓           ↓          ↓           ↓          ↓        ↓
+🏠 시작 → 📝 감정입력 → 💭 AI대화 → 🧠 CBT → 💡 분석 → 🌱 개선
+```
 
 ## 📁 프로젝트 구조
 
 ```
 Innerpal/
-├── App.js                 # 메인 앱 진입점
-├── config/
-│   └── app.js             # 앱 설정 (컬러, 폰트, 감정 설정)
-├── lib/
-│   └── supabase.js        # Supabase 클라이언트 및 DB 헬퍼
-├── services/
-│   └── openai.js          # OpenAI GPT API 서비스
-├── components/
-│   └── common.js          # 공통 UI 컴포넌트
+├── App.js                      # 메인 네비게이션 (업데이트됨)
 ├── screens/
-│   └── HomeScreen.js      # 메인 홈 화면
-├── hooks/
-│   └── index.js           # 커스텀 React 훅들
-├── utils/
-│   └── index.js           # 유틸리티 함수들
-└── assets/                # 이미지 및 정적 자원
+│   ├── InnerTalkScreen.js      # AI 대화 (대폭 개선)
+│   ├── EmotionInputScreen.js   # 감정 입력 폼 (신규)
+│   ├── CBTSessionScreen.js     # CBT 질문 시퀀스 (신규)
+│   ├── CBTInsightsScreen.js    # CBT 완료 인사이트 (신규)
+│   ├── HomeScreen.js           # 홈 화면
+│   └── ApiTestScreen.js        # API 테스트
+├── config/ & lib/ & services/  # 기존 구조 유지
+└── components/ & hooks/ & utils/
 ```
-
-## 🛠 설치 및 실행
-
-### 필수 조건
-- Node.js (16.0 이상)
-- npm 또는 yarn
-- Expo CLI
-- 모바일 기기의 Expo Go 앱
-
-### 설치 단계
-
-1. **저장소 클론**
-```bash
-git clone https://github.com/did88/Innerpal.git
-cd Innerpal
-```
-
-2. **의존성 설치**
-```bash
-npm install
-```
-
-3. **환경 변수 설정**
-```bash
-cp .env.example .env
-```
-
-`.env` 파일을 편집하여 다음 값들을 설정하세요:
-```env
-EXPO_PUBLIC_SUPABASE_URL=your_supabase_project_url
-EXPO_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-EXPO_PUBLIC_OPENAI_API_KEY=your_openai_api_key
-```
-
-4. **개발 서버 시작**
-```bash
-npm start
-```
-
-5. **모바일에서 실행**
-   - 스마트폰에 Expo Go 앱 설치
-   - 터미널에 표시된 QR 코드 스캔
-   - 또는 `a` (Android) / `i` (iOS) 키를 눌러 에뮬레이터에서 실행
-
-## 🎨 디자인 시스템
-
-### 컬러 팔레트
-- **Primary**: `#4A5568` (차분한 인디고 블루)
-- **Secondary**: `#A78BFA` (따뜻한 라벤더)
-- **Accent**: `#F6E05E` (소프트 골드)
-- **Background**: `#FEFCF0` (크림 화이트)
-
-### 감정 카테고리
-- 😊 기쁨 (Joy) - `#48BB78`
-- 😢 슬픔 (Sadness) - `#4299E1`
-- 😠 분노 (Anger) - `#F56565`
-- 😰 불안 (Fear) - `#ED8936`
-- 😮 놀람 (Surprise) - `#A78BFA`
-- 😤 혐오 (Disgust) - `#38B2AC`
-- 😐 평온 (Neutral) - `#718096`
 
 ## 🔧 개발 현황
 
-### ✅ 완료된 기능 (Week 1-2)
-- [x] 프로젝트 기본 구조 설정
-- [x] Supabase 데이터베이스 연동
-- [x] OpenAI GPT API 서비스 구현
-- [x] 기본 UI 컴포넌트 시스템
-- [x] 홈 화면 구현
-- [x] 커스텀 훅 상태 관리
-- [x] 유틸리티 함수 라이브러리
+### ✅ 완료된 기능 (Week 3-4)
+- [x] **감정 입력 폼 완성** - 직관적인 UI/UX
+- [x] **CBT 질문 시퀀스 구현** - 전문적 4단계 프로세스
+- [x] **CBT 인사이트 화면** - 세션 완료 후 분석
+- [x] **Inner Talk 개선** - 컨텍스트 인식 대화
+- [x] **네비게이션 통합** - 모든 화면 연결
+- [x] **디자인 시스템 통일** - 일관된 UI/UX
 
-### 🚧 진행 중 (Week 3-4)
+### 🚧 다음 단계 (Week 5-6)
+- [ ] 실제 GPT API 연동 (현재 시뮬레이션)
+- [ ] Supabase 데이터베이스 저장
 - [ ] 사용자 인증 시스템
-- [ ] Inner Talk 화면 (AI 대화)
-- [ ] 감정 입력 폼
-- [ ] 기본 감정 기록 저장
-
-### 📋 예정 기능 (Week 5-8)
-- [ ] CBT 질문 시퀀스 구현
 - [ ] 감정 히스토리 차트
-- [ ] 감정 패턴 인사이트
-- [ ] 푸시 알림 시스템
 
-### 🔮 향후 계획 (Week 9+)
-- [ ] 감정 DNA 분석 시스템
-- [ ] 역할극 기반 CBT
-- [ ] 감정 미래 예측
-- [ ] 익명 커뮤니티 기능
+## 🎨 디자인 철학
 
-## 📊 사용 가능한 스크립트
+### 감정 친화적 디자인
+- **부드러운 색상**: 차분하고 안정감 있는 컬러 팔레트
+- **직관적 아이콘**: 감정별 이모지와 컬러 코딩
+- **애니메이션**: 자연스러운 전환과 피드백
+- **접근성**: 큰 터치 영역과 명확한 시각적 피드백
 
-```bash
-# 개발 서버 시작
-npm start
-
-# Android에서 실행
-npm run android
-
-# iOS에서 실행 (macOS 필요)
-npm run ios
-
-# 웹에서 실행
-npm run web
-
-# 의존성 정리
-npm run clean
-
-# 타입 체크 (TypeScript 전환 시)
-npm run type-check
+### 주요 색상 체계
+```
+Primary: #4A5568    (안정감 있는 진회색)
+Success: #48BB78    (기쁨 - 밝은 초록)
+Info: #4299E1       (슬픔 - 차분한 파랑)
+Warning: #ED8936    (불안 - 따뜻한 주황)
+Danger: #F56565     (분노 - 부드러운 빨강)
+Purple: #A78BFA     (놀람 - 신비로운 보라)
+Teal: #38B2AC       (혐오 - 차분한 청록)
 ```
 
-## 🔐 환경 변수 설정
+## 🧠 CBT 기능 상세
 
-### Supabase 설정
-1. [supabase.com](https://supabase.com)에서 새 프로젝트 생성
-2. Settings > API에서 URL과 anon key 복사
-3. `.env` 파일에 추가
+### 4단계 인지행동치료 프로세스
 
-### OpenAI 설정
-1. [platform.openai.com](https://platform.openai.com)에서 API 키 생성
-2. `.env` 파일에 추가
-3. 사용량 제한 설정 권장
-
-## 🗃️ 데이터베이스 스키마
-
-### 주요 테이블 구조
-
-```sql
--- 사용자 프로필
-CREATE TABLE profiles (
-  id UUID REFERENCES auth.users(id) PRIMARY KEY,
-  display_name TEXT,
-  personality TEXT,
-  comfort_style TEXT,
-  interests TEXT[],
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- 감정 기록
-CREATE TABLE emotions (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  user_id UUID REFERENCES profiles(id) NOT NULL,
-  emotion_text TEXT NOT NULL,
-  primary_emotion TEXT,
-  intensity INTEGER CHECK (intensity >= 1 AND intensity <= 5),
-  emotion_tags TEXT[],
-  gpt_response TEXT,
-  cbt_conversation JSONB,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
-
--- 감정 패턴 분석
-CREATE TABLE emotion_patterns (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  user_id UUID REFERENCES profiles(id) NOT NULL,
-  period_type TEXT CHECK (period_type IN ('daily', 'weekly', 'monthly')),
-  pattern_data JSONB,
-  insights TEXT[],
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
+#### 1단계: 생각 인식하기 💭
+```
+- 자동 사고 패턴 파악
+- 생각의 강도 측정 (1-10 척도)
+- 반복되는 사고 패턴 분석
 ```
 
-## 🎯 핵심 기능 상세
+#### 2단계: 증거 탐색하기 🔍  
+```
+- 객관적 증거 vs 주관적 해석 구분
+- 반박 증거 찾기
+- 타인의 관점에서 바라보기
+```
 
-### 1. AI 감정 분석
+#### 3단계: 대안적 사고 💡
+```
+- 균형잡힌 관점 모색
+- 최악/최고/현실적 시나리오 분석  
+- 학습 기회 발견
+```
+
+#### 4단계: 행동 계획 🎯
+```
+- 구체적 대처 방안 수립
+- 즉시 실행 가능한 작은 행동
+- 기분 변화 추적
+```
+
+## 📊 기술적 구현 특징
+
+### 상태 관리
+- **React Hooks**: useState, useEffect 활용
+- **네비게이션 파라미터**: 화면 간 데이터 전달
+- **실시간 검증**: 폼 입력 상태 관리
+
+### UI/UX 개선사항
+- **키보드 회피**: KeyboardAvoidingView 적용
+- **스크롤 최적화**: 자동 스크롤 및 성능 최적화
+- **터치 피드백**: activeOpacity 및 햅틱 피드백
+- **로딩 상태**: 자연스러운 로딩 인디케이터
+
+### 애니메이션 시스템
 ```javascript
-// 감정 텍스트 분석 예시
-const result = await openAIService.analyzeEmotion(
-  "오늘 직장에서 상사에게 혼났어. 정말 기분이 안 좋아."
-);
+// 진행도 바 애니메이션
+Animated.timing(progressValue, {
+  toValue: currentStep / totalSteps,
+  duration: 300,
+  useNativeDriver: false
+}).start();
 
-// 결과:
-// {
-//   primary_emotion: "분노",
-//   intensity: 4,
-//   keywords: ["혼났어", "기분이 안 좋아"],
-//   empathy_response: "직장에서 힘든 일이 있으셨군요..."
-// }
+// 카드 등장 애니메이션  
+Animated.parallel([
+  Animated.timing(fadeAnim, { toValue: 1 }),
+  Animated.timing(slideAnim, { toValue: 0 })
+]).start();
 ```
 
-### 2. CBT 질문 시퀀스
-```javascript
-// CBT 기반 인지재구성 질문 생성
-const questions = await openAIService.generateCBTQuestions(emotionAnalysis);
+## 🚀 설치 및 실행
 
-// 결과:
-// [
-//   { step: "사고 인식", question: "그 상황에서 어떤 생각이 들었나요?" },
-//   { step: "증거 탐색", question: "그 생각을 뒷받침하는 사실은 무엇인가요?" },
-//   { step: "대안 탐색", question: "다른 해석의 여지는 없을까요?" }
-// ]
-```
-
-### 3. 감정 패턴 인사이트
-- 주간/월간 감정 트렌드 분석
-- 감정 촉발 요인 패턴 발견
-- 개인화된 성장 제안
-- 감정 회복 속도 측정
-
-## 🚨 문제 해결
-
-### 자주 발생하는 문제들
-
-**1. 앱이 실행되지 않는 경우**
+### 빠른 시작
 ```bash
-# 캐시 클리어 후 재시작
-npm start -- --clear
-```
-
-**2. 의존성 충돌**
-```bash
-# node_modules 재설치
-rm -rf node_modules package-lock.json
+git clone https://github.com/did88/Innerpal.git
+cd Innerpal
 npm install
+npm start
 ```
 
-**3. Expo Go 연결 안됨**
-- 같은 WiFi 네트워크 확인
-- 방화벽 설정 확인
-- Expo CLI 최신 버전 업데이트
+### 새로운 기능 테스트
+1. **감정 기록**: 홈 화면 → "감정 기록" 버튼
+2. **CBT 가이드**: 감정 기록 후 → "CBT 가이드 시작하기"
+3. **AI 대화**: Inner Talk 탭 → 자유로운 대화
+4. **인사이트**: CBT 완료 후 자동 연결
 
-**4. GPT API 오류**
-- OpenAI API 키 확인
-- API 사용량 한도 확인
-- 네트워크 연결 상태 확인
+## 🎯 사용자 경험 플로우
+
+### 신규 사용자 여정
+```
+1. 앱 시작 → 스플래시 화면
+2. 홈 화면 → 기능 소개 카드들
+3. "감정 기록" → 직관적 입력 폼
+4. Inner Talk → AI와 자연스러운 대화  
+5. CBT 제안 → 전문적 가이드 세션
+6. 인사이트 → 성장 분석 및 격려
+7. 지속적 사용 → 패턴 인식 및 개선
+```
+
+### 재방문 사용자 플로우
+```
+홈 화면 → 빠른 감정 기록 → Inner Talk 계속
+   ↓
+이전 CBT 인사이트 확인 → 새로운 세션 시작
+```
+
+## 💡 개발 팁 및 베스트 프랙티스
+
+### 코드 구조화
+- **컴포넌트 분리**: 재사용 가능한 작은 컴포넌트
+- **스타일 분리**: StyleSheet.create() 사용
+- **상수 관리**: APP_CONFIG 객체로 중앙 관리
+
+### 성능 최적화
+- **이미지 최적화**: 적절한 크기 및 형식 사용
+- **메모리 관리**: useEffect cleanup 함수 활용
+- **렌더링 최적화**: FlatList 대신 ScrollView 적절히 사용
+
+## 🔮 향후 개발 로드맵
+
+### 단기 목표 (1-2개월)
+- [ ] 실제 AI API 연동
+- [ ] 데이터 저장 및 동기화
+- [ ] 감정 히스토리 차트
+- [ ] 사용자 인증 시스템
+
+### 중기 목표 (3-6개월)  
+- [ ] 고급 감정 분석 알고리즘
+- [ ] 개인화된 CBT 시퀀스
+- [ ] 소셜 기능 (익명 커뮤니티)
+- [ ] 다국어 지원
+
+### 장기 목표 (6개월+)
+- [ ] 웨어러블 디바이스 연동
+- [ ] 음성 감정 인식
+- [ ] 전문가 연결 서비스
+- [ ] 연구 데이터 기여 옵션
 
 ## 🤝 기여하기
 
-Innerpal 프로젝트에 기여해주시는 모든 분들을 환영합니다!
-
-### 기여 방법
-1. Fork 프로젝트
-2. Feature 브랜치 생성 (`git checkout -b feature/새로운기능`)
-3. 변경사항 커밋 (`git commit -m '새로운 기능 추가'`)
-4. 브랜치에 Push (`git push origin feature/새로운기능`)
-5. Pull Request 생성
+### 개발에 참여하는 방법
+1. **이슈 리포팅**: 버그나 개선사항 제안
+2. **기능 개발**: 새로운 화면이나 컴포넌트 추가
+3. **디자인 개선**: UI/UX 향상 제안
+4. **번역 도움**: 다국어 지원 확대
 
 ### 코딩 컨벤션
-- **파일명**: PascalCase (컴포넌트), camelCase (유틸리티)
-- **함수명**: camelCase
-- **상수명**: UPPER_SNAKE_CASE
-- **컴포넌트**: 함수형 컴포넌트 + 훅 사용
-- **스타일**: StyleSheet.create() 사용
+```javascript
+// 컴포넌트명: PascalCase
+const EmotionInputScreen = () => {...}
 
-### 커밋 메시지 규칙
+// 함수명: camelCase  
+const handleSubmitEmotion = () => {...}
+
+// 상수명: UPPER_SNAKE_CASE
+const APP_CONFIG = {...}
+
+// 스타일: camelCase
+const styles = StyleSheet.create({
+  emotionCard: {...}
+});
 ```
-feat: 새로운 기능 추가
-fix: 버그 수정
-docs: 문서 업데이트
-style: 코드 포맷팅
-refactor: 코드 리팩토링
-test: 테스트 추가
-chore: 빌드 설정 등
-```
 
-## 📄 라이선스
+## 📞 지원 및 피드백
 
-이 프로젝트는 MIT 라이선스 하에 배포됩니다. 자세한 내용은 [LICENSE](LICENSE) 파일을 참조하세요.
-
-## 📞 연락처
-
-프로젝트에 대한 문의사항이나 제안이 있으시면 언제든 연락해주세요:
-
-- **GitHub Issues**: [Issues 페이지](https://github.com/did88/Innerpal/issues)
-- **프로젝트 관리자**: @did88
-
-## 🙏 감사의 말
-
-- **OpenAI**: GPT-4 API 제공
-- **Supabase**: 훌륭한 백엔드 서비스
-- **Expo 팀**: 모바일 개발 도구
-- **React Native 커뮤니티**: 지속적인 지원과 라이브러리들
+- **GitHub Issues**: 기술적 문제 및 기능 요청
+- **사용자 피드백**: 앱 내 피드백 기능 (개발 예정)
+- **개발자 연락**: @did88
 
 ---
 
-**Innerpal - 당신의 내면의 친구가 되어드립니다 💙**
+**Innerpal** - 당신의 내면의 친구가 되어드립니다 💙
 
 > "감정을 숨기지 말고, 이해하고 받아들이며, 함께 성장해나가요."
