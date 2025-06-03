@@ -1,3 +1,5 @@
+import { EMOTION_CONFIG } from '../utils/emotionConstants';
+
 const OPENAI_API_KEY = process.env.EXPO_PUBLIC_OPENAI_API_KEY;
 const OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions';
 
@@ -50,7 +52,19 @@ export const getEmotionSummary = async (text) => {
 
     try {
       const emotionResult = JSON.parse(jsonText);
-      return emotionResult;
+
+      const KOR_TO_ENG = Object.fromEntries(
+        Object.entries(EMOTION_CONFIG.NAMES).map(([en, ko]) => [ko, en])
+      );
+      const normalized = {};
+
+      Object.keys(emotionResult).forEach(key => {
+        const num = parseFloat(emotionResult[key]);
+        const engKey = KOR_TO_ENG[key] || key;
+        normalized[engKey] = Number.isNaN(num) ? 0 : num;
+      });
+
+      return normalized;
     } catch (parseError) {
       console.error('JSON 파싱 오류:', parseError);
       return null;
