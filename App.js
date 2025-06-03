@@ -6,6 +6,9 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, View, Text, ActivityIndicator, ScrollView, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
+import { database } from './lib/supabase';
+import { requestPermissionsAsync } from './services/notifications';
+
 import { APP_CONFIG } from './config/app';
 
 import HomeScreen from './screens/HomeScreen';
@@ -113,6 +116,10 @@ function MainTabs() {
 export default function App() {
   const [loading, setLoading] = useState(true);
   useEffect(() => { setTimeout(() => { setLoading(false); }, 2500); }, []);
+  useEffect(() => {
+    requestPermissionsAsync();
+    database.syncLocalData().catch(() => {});
+  }, []);
   if (loading) {
     return (
       <View style={styles.fullScreen}>
