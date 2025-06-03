@@ -1,284 +1,347 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { 
   StyleSheet, 
-  Text, 
   View, 
+  Text, 
   ScrollView, 
   TouchableOpacity, 
-  RefreshControl,
-  Dimensions 
+  Dimensions,
+  Animated,
+  StatusBar
 } from 'react-native';
-import { APP_CONFIG, EMOTION_CONFIG } from '../config/app';
-import { Button, Card, EmotionBadge } from '../components/common';
-import { dateUtils, emotionUtils } from '../utils';
-import { database, auth } from '../lib/supabase';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { APP_CONFIG, UI_PRESETS, EMOTION_CONFIG } from '../config/app';
 
-const { width } = Dimensions.get('window');
+const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
-const HomeScreen = ({ navigation }) => {
-  const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
-  const [currentUser, setCurrentUser] = useState(null);
-  const [todayMood, setTodayMood] = useState(null);
-  const [recentEmotions, setRecentEmotions] = useState([]);
-  const [weeklyInsight, setWeeklyInsight] = useState(null);
-
-  useEffect(() => {
-    loadHomeData();
+// 애니메이션 카드 컴포넌트
+const AnimatedCard = ({ children, style, onPress, delay = 0 }) => {
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const scaleAnim = useRef(new Animated.Value(0.95)).current;
+  
+  React.useEffect(() => {
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 600,
+        delay,
+        useNativeDriver: true,
+      }),
+      Animated.spring(scaleAnim, {
+        toValue: 1,
+        tension: 50,
+        friction: 7,
+        delay,
+        useNativeDriver: true,
+      }),
+    ]).start();
   }, []);
 
-  const loadHomeData = async () => {
-    try {
-      // 현재 사용자 정보 가져오기
-      const { user } = await auth.getCurrentUser();
-      setCurrentUser(user);
-
-      if (user) {
-        // 최근 감정 기록 가져오기 (최근 5개)
-        const { data: emotions } = await database.getEmotions(user.id, 5);
-        setRecentEmotions(emotions || []);
-
-        // 오늘의 감정 상태 확인
-        const today = new Date().toISOString().split('T')[0];
-        const todayEmotion = emotions?.find(emotion => 
-          emotion.created_at.startsWith(today)
-        );
-        setTodayMood(todayEmotion);
-
-        // 주간 인사이트 (임시 데이터)
-        setWeeklyInsight({
-          trend: '긍정적',
-          message: '이번 주 전반적으로 안정된 감정 상태를 보이고 있어요.',
-          improvement: 15
-        });
-      }
-    } catch (error) {
-      console.error('Home data loading error:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const onRefresh = async () => {
-    setRefreshing(true);
-    await loadHomeData();
-    setRefreshing(false);
-  };
-
-  const getGreeting = () => {
-    const hour = new Date().getHours();
-    const name = currentUser?.user_metadata?.display_name || '친구';
+  const handlePress = () => {
+    Animated.sequence([
+      Animated.timing(scaleAnim, {
+        toValue: 0.95,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+      Animated.timing(scaleAnim, {
+        toValue: 1,
+        duration: 100,
+        useNativeDriver: true,
+      }),
+    ]).start();
     
-    if (hour < 12) return `좋은 아침이에요, ${name}님! ☀️`;
-    if (hour < 18) return `안녕하세요, ${name}님! 🌤️`;
-    return `좋은 저녁이에요, ${name}님! 🌙`;
+    if (onPress) onPress();
   };
-
-  const getMoodStatusMessage = () => {
-    if (!todayMood) {
-      return {
-        title: "오늘의 마음은 어떠신가요?",
-        subtitle: "첫 번째 감정을 기록해보세요",
-        action: "감정 기록하기",
-        actionType: "primary"
-      };
-    }
-
-    const emotion = EMOTION_CONFIG.categories.find(e => e.id === todayMood.primary_emotion);
-    return {
-      title: `오늘은 ${emotion?.name || '복잡한'} 하루였군요`,
-      subtitle: `${dateUtils.formatTimeOnly(todayMood.created_at)}에 기록됨`,
-      action: "더 이야기하기",
-      actionType: "secondary"
-    };
-  };
-
-  const renderQuickActions = () => (
-    <View style={styles.quickActions}>
-      <TouchableOpacity 
-        style={styles.quickActionButton}
-        onPress={() => navigation.navigate('InnerTalk')}
-      >
-        <Text style={styles.quickActionEmoji}>💭</Text>
-        <Text style={styles.quickActionText}>Inner Talk</Text>
-      </TouchableOpacity>
-      
-      <TouchableOpacity 
-        style={styles.quickActionButton}
-        onPress={() => navigation.navigate('Insights')}
-      >
-        <Text style={styles.quickActionEmoji}>📊</Text>
-        <Text style={styles.quickActionText}>감정 분석</Text>
-      </TouchableOpacity>
-      
-      <TouchableOpacity 
-        style={styles.quickActionButton}
-        onPress={() => {/* 명상 기능 추후 구현 */}}
-      >
-        <Text style={styles.quickActionEmoji}>🧘‍♀️</Text>
-        <Text style={styles.quickActionText}>마음 챙김</Text>
-      </TouchableOpacity>
-      
-      <TouchableOpacity 
-        style={styles.quickActionButton}
-        onPress={() => {/* 응급 위로 기능 추후 구현 */}}
-      >
-        <Text style={styles.quickActionEmoji}>🤗</Text>
-        <Text style={styles.quickActionText}>응급 위로</Text>
-      </TouchableOpacity>
-    </View>
-  );
-
-  const renderRecentEmotions = () => {
-    if (!recentEmotions.length) {
-      return (
-        <Card style={styles.emptyCard}>
-          <Text style={styles.emptyText}>아직 감정 기록이 없어요</Text>
-          <Text style={styles.emptySubtext}>첫 번째 마음을 기록해보세요</Text>
-        </Card>
-      );
-    }
-
-    return (
-      <View>
-        {recentEmotions.slice(0, 3).map((emotion, index) => (
-          <Card key={emotion.id} style={[styles.emotionCard, index > 0 && { marginTop: 12 }]}>
-            <View style={styles.emotionHeader}>
-              <EmotionBadge 
-                emotion={emotion.primary_emotion} 
-                intensity={emotion.intensity}
-                size="sm"
-              />
-              <Text style={styles.emotionTime}>
-                {dateUtils.formatRelative(emotion.created_at)}
-              </Text>
-            </View>
-            <Text style={styles.emotionText} numberOfLines={2}>
-              {emotion.emotion_text}
-            </Text>
-            {emotion.gpt_response && (
-              <Text style={styles.responseText} numberOfLines={1}>
-                💙 {emotion.gpt_response}
-              </Text>
-            )}
-          </Card>
-        ))}
-        
-        {recentEmotions.length > 3 && (
-          <TouchableOpacity 
-            style={styles.viewMoreButton}
-            onPress={() => navigation.navigate('Insights')}
-          >
-            <Text style={styles.viewMoreText}>더 보기 →</Text>
-          </TouchableOpacity>
-        )}
-      </View>
-    );
-  };
-
-  const renderWeeklyInsight = () => {
-    if (!weeklyInsight) return null;
-
-    return (
-      <Card style={[styles.insightCard, { backgroundColor: APP_CONFIG.colors.primary + '10' }]}>
-        <View style={styles.insightHeader}>
-          <Text style={styles.insightTitle}>📈 이번 주 인사이트</Text>
-          <View style={styles.insightBadge}>
-            <Text style={styles.insightBadgeText}>{weeklyInsight.trend}</Text>
-          </View>
-        </View>
-        <Text style={styles.insightMessage}>{weeklyInsight.message}</Text>
-        <View style={styles.insightProgress}>
-          <Text style={styles.insightProgressText}>감정 안정도</Text>
-          <View style={styles.progressBar}>
-            <View 
-              style={[
-                styles.progressFill, 
-                { width: `${weeklyInsight.improvement}%` }
-              ]} 
-            />
-          </View>
-          <Text style={styles.progressPercent}>{weeklyInsight.improvement}%</Text>
-        </View>
-      </Card>
-    );
-  };
-
-  if (loading) {
-    return (
-      <View style={[styles.container, styles.center]}>
-        <Text style={styles.loadingText}>Innerpal 준비 중...</Text>
-      </View>
-    );
-  }
-
-  const moodStatus = getMoodStatusMessage();
 
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={styles.contentContainer}
-      refreshControl={
-        <RefreshControl
-          refreshing={refreshing}
-          onRefresh={onRefresh}
-          colors={[APP_CONFIG.colors.primary]}
-          tintColor={APP_CONFIG.colors.primary}
-        />
-      }
+    <Animated.View 
+      style={[
+        { opacity: fadeAnim, transform: [{ scale: scaleAnim }] },
+        style
+      ]}
     >
-      {/* 인사말 섹션 */}
-      <View style={styles.greetingSection}>
-        <Text style={styles.greetingText}>{getGreeting()}</Text>
-        <Text style={styles.dateText}>{dateUtils.formatAbsolute(new Date(), 'M월 d일 EEEE')}</Text>
-      </View>
+      <TouchableOpacity onPress={handlePress} activeOpacity={0.9}>
+        {children}
+      </TouchableOpacity>
+    </Animated.View>
+  );
+};
 
-      {/* 오늘의 감정 상태 */}
-      <Card style={styles.moodCard}>
-        <Text style={styles.moodTitle}>{moodStatus.title}</Text>
-        <Text style={styles.moodSubtitle}>{moodStatus.subtitle}</Text>
-        
-        {todayMood && (
-          <View style={styles.moodDisplay}>
-            <EmotionBadge 
-              emotion={todayMood.primary_emotion}
-              intensity={todayMood.intensity}
-              size="lg"
-            />
+// 그라데이션 버튼 컴포넌트
+const GradientButton = ({ title, emoji, colors, onPress, style }) => (
+  <TouchableOpacity onPress={onPress} activeOpacity={0.8} style={style}>
+    <LinearGradient
+      colors={colors}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+      style={styles.gradientButton}
+    >
+      <Text style={styles.gradientButtonEmoji}>{emoji}</Text>
+      <Text style={styles.gradientButtonText}>{title}</Text>
+    </LinearGradient>
+  </TouchableOpacity>
+);
+
+// 글래스 카드 컴포넌트
+const GlassCard = ({ children, style, ...props }) => (
+  <View style={[styles.glassCard, style]} {...props}>
+    {children}
+  </View>
+);
+
+const HomeScreen = ({ navigation }) => {
+  const insets = useSafeAreaInsets();
+  const [currentTime] = useState(new Date());
+  
+  const getGreeting = () => {
+    const hour = currentTime.getHours();
+    if (hour < 12) return '좋은 아침이에요 🌅';
+    if (hour < 18) return '좋은 오후에요 ☀️';
+    return '좋은 저녁이에요 🌙';
+  };
+
+  const handleQuickAction = (actionType) => {
+    switch (actionType) {
+      case 'innerTalk':
+        navigation.navigate('InnerTalk');
+        break;
+      case 'insights':
+        navigation.navigate('Insights');
+        break;
+      case 'apiTest':
+        navigation.navigate('ApiTest');
+        break;
+      case 'emergency':
+        alert('🤗 응급 위로 기능을 준비 중입니다!');
+        break;
+      default:
+        console.log('Unknown action:', actionType);
+    }
+  };
+
+  return (
+    <View style={[styles.container, { paddingTop: insets.top }]}>
+      <StatusBar barStyle="dark-content" backgroundColor="transparent" translucent />
+      
+      {/* 헤더 그라데이션 배경 */}
+      <LinearGradient
+        colors={['rgba(99, 102, 241, 0.1)', 'transparent']}
+        style={styles.headerGradient}
+      />
+      
+      <ScrollView 
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+        bounces={true}
+      >
+        {/* 모던 헤더 */}
+        <AnimatedCard style={styles.headerSection} delay={0}>
+          <View style={styles.header}>
+            <View style={styles.brandContainer}>
+              <LinearGradient
+                colors={APP_CONFIG.colors.gradients.primary}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.brandIcon}
+              >
+                <Text style={styles.brandEmoji}>💙</Text>
+              </LinearGradient>
+              <Text style={styles.brandText}>Innerpal</Text>
+            </View>
+            
+            <View style={styles.greetingContainer}>
+              <Text style={styles.greeting}>{getGreeting()}</Text>
+              <Text style={styles.subtitle}>오늘 마음은 어떠신가요?</Text>
+            </View>
           </View>
-        )}
+        </AnimatedCard>
         
-        <Button
-          title={moodStatus.action}
-          variant={moodStatus.actionType}
-          onPress={() => navigation.navigate('InnerTalk')}
-          style={styles.moodButton}
-        />
-      </Card>
-
-      {/* 빠른 액션 */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>빠른 실행</Text>
-        {renderQuickActions()}
-      </View>
-
-      {/* 주간 인사이트 */}
-      {weeklyInsight && (
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>나의 감정 여행</Text>
-          {renderWeeklyInsight()}
+        {/* 퀵 액션 그리드 */}
+        <View style={styles.quickActionsGrid}>
+          <AnimatedCard delay={100}>
+            <GradientButton
+              title="Inner Talk"
+              emoji="💭"
+              colors={APP_CONFIG.colors.gradients.primary}
+              onPress={() => handleQuickAction('innerTalk')}
+              style={styles.quickActionLarge}
+            />
+          </AnimatedCard>
+          
+          <View style={styles.quickActionColumn}>
+            <AnimatedCard delay={200}>
+              <GradientButton
+                title="감정 분석"
+                emoji="📊"
+                colors={APP_CONFIG.colors.gradients.cool}
+                onPress={() => handleQuickAction('insights')}
+                style={styles.quickActionSmall}
+              />
+            </AnimatedCard>
+            
+            <AnimatedCard delay={300}>
+              <GradientButton
+                title="응급 위로"
+                emoji="🤗"
+                colors={APP_CONFIG.colors.gradients.warm}
+                onPress={() => handleQuickAction('emergency')}
+                style={styles.quickActionSmall}
+              />
+            </AnimatedCard>
+          </View>
         </View>
-      )}
-
-      {/* 최근 감정 기록 */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>최근 기록</Text>
-        {renderRecentEmotions()}
-      </View>
-
-      {/* 하단 여백 */}
-      <View style={styles.bottomSpacer} />
-    </ScrollView>
+        
+        {/* 피처드 카드 */}
+        <AnimatedCard delay={400}>
+          <GlassCard style={styles.featuredCard}>
+            <View style={styles.featuredHeader}>
+              <LinearGradient
+                colors={['#F59E0B', '#EF4444']}
+                style={styles.featuredIcon}
+              >
+                <Text style={styles.featuredEmoji}>🚀</Text>
+              </LinearGradient>
+              <View style={styles.featuredContent}>
+                <Text style={styles.featuredTitle}>AI와 실시간 대화</Text>
+                <Text style={styles.featuredSubtitle}>Inner Talk로 마음을 나눠보세요</Text>
+              </View>
+            </View>
+            
+            <TouchableOpacity 
+              style={styles.featuredButton}
+              onPress={() => handleQuickAction('innerTalk')}
+              activeOpacity={0.8}
+            >
+              <LinearGradient
+                colors={APP_CONFIG.colors.gradients.primary}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                style={styles.featuredButtonGradient}
+              >
+                <Text style={styles.featuredButtonText}>지금 시작하기</Text>
+                <Text style={styles.featuredButtonArrow}>→</Text>
+              </LinearGradient>
+            </TouchableOpacity>
+          </GlassCard>
+        </AnimatedCard>
+        
+        {/* 감정 상태 카드 */}
+        <AnimatedCard delay={500}>
+          <GlassCard style={styles.emotionCard}>
+            <View style={styles.emotionHeader}>
+              <Text style={styles.cardTitle}>💭 오늘의 감정</Text>
+              <TouchableOpacity style={styles.moreButton}>
+                <Text style={styles.moreButtonText}>전체보기</Text>
+              </TouchableOpacity>
+            </View>
+            
+            <View style={styles.emotionGrid}>
+              {EMOTION_CONFIG.categories.slice(0, 4).map((emotion, index) => (
+                <TouchableOpacity 
+                  key={emotion.id}
+                  style={[styles.emotionItem, { backgroundColor: emotion.lightColor }]}
+                  activeOpacity={0.7}
+                >
+                  <Text style={styles.emotionEmoji}>{emotion.emoji}</Text>
+                  <Text style={[styles.emotionName, { color: emotion.color }]}>
+                    {emotion.name}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </GlassCard>
+        </AnimatedCard>
+        
+        {/* 인사이트 미니 카드 */}
+        <View style={styles.miniCardsRow}>
+          <AnimatedCard delay={600} style={styles.miniCardContainer}>
+            <GlassCard style={styles.miniCard}>
+              <LinearGradient
+                colors={['#10B981', '#059669']}
+                style={styles.miniCardIcon}
+              >
+                <Text style={styles.miniCardEmoji}>📈</Text>
+              </LinearGradient>
+              <Text style={styles.miniCardTitle}>성장 지수</Text>
+              <Text style={styles.miniCardValue}>+12%</Text>
+            </GlassCard>
+          </AnimatedCard>
+          
+          <AnimatedCard delay={700} style={styles.miniCardContainer}>
+            <GlassCard style={styles.miniCard}>
+              <LinearGradient
+                colors={['#3B82F6', '#2563EB']}
+                style={styles.miniCardIcon}
+              >
+                <Text style={styles.miniCardEmoji}>🎯</Text>
+              </LinearGradient>
+              <Text style={styles.miniCardTitle}>목표 달성</Text>
+              <Text style={styles.miniCardValue}>3/5</Text>
+            </GlassCard>
+          </AnimatedCard>
+        </View>
+        
+        {/* 최근 활동 카드 */}
+        <AnimatedCard delay={800}>
+          <GlassCard style={styles.activityCard}>
+            <View style={styles.activityHeader}>
+              <Text style={styles.cardTitle}>📝 최근 활동</Text>
+              <View style={styles.activityBadge}>
+                <Text style={styles.activityBadgeText}>새로운</Text>
+              </View>
+            </View>
+            
+            <Text style={styles.activityText}>
+              아직 감정 기록이 없어요.{'\n'}첫 번째 마음을 기록해보세요! ✨
+            </Text>
+            
+            <TouchableOpacity 
+              style={styles.activityButton}
+              onPress={() => handleQuickAction('innerTalk')}
+              activeOpacity={0.8}
+            >
+              <LinearGradient
+                colors={APP_CONFIG.colors.gradients.primary}
+                style={styles.activityButtonGradient}
+              >
+                <Text style={styles.activityButtonText}>첫 기록 남기기</Text>
+              </LinearGradient>
+            </TouchableOpacity>
+          </GlassCard>
+        </AnimatedCard>
+        
+        {/* 오늘의 팁 카드 */}
+        <AnimatedCard delay={900}>
+          <GlassCard style={[styles.tipCard, { marginBottom: APP_CONFIG.spacing['8'] }]}>
+            <LinearGradient
+              colors={['rgba(59, 130, 246, 0.1)', 'rgba(99, 102, 241, 0.1)']}
+              style={styles.tipGradient}
+            />
+            <View style={styles.tipHeader}>
+              <Text style={styles.tipIcon}>💡</Text>
+              <Text style={styles.tipTitle}>오늘의 마음 팁</Text>
+            </View>
+            <Text style={styles.tipText}>
+              감정을 글로 표현하는 것만으로도{'\n'}마음의 정리와 치유 효과를 얻을 수 있어요.
+            </Text>
+          </GlassCard>
+        </AnimatedCard>
+        
+        {/* 개발자 도구 (임시) */}
+        <AnimatedCard delay={1000}>
+          <TouchableOpacity 
+            style={styles.devButton}
+            onPress={() => handleQuickAction('apiTest')}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.devButtonText}>🔧 개발자 도구</Text>
+          </TouchableOpacity>
+        </AnimatedCard>
+      </ScrollView>
+    </View>
   );
 };
 
@@ -287,210 +350,404 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: APP_CONFIG.colors.background,
   },
-  contentContainer: {
-    padding: APP_CONFIG.spacing.lg,
+  
+  headerGradient: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 200,
+    zIndex: -1,
   },
-  center: {
+  
+  scrollView: {
+    flex: 1,
+  },
+  
+  scrollContent: {
+    paddingHorizontal: APP_CONFIG.spacing['4'],
+    paddingBottom: APP_CONFIG.spacing['8'],
+  },
+  
+  // 헤더 스타일
+  headerSection: {
+    marginBottom: APP_CONFIG.spacing['6'],
+  },
+  
+  header: {
+    paddingVertical: APP_CONFIG.spacing['6'],
+  },
+  
+  brandContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: APP_CONFIG.spacing['4'],
+  },
+  
+  brandIcon: {
+    width: 48,
+    height: 48,
+    borderRadius: APP_CONFIG.borderRadius.xl,
     justifyContent: 'center',
     alignItems: 'center',
+    marginRight: APP_CONFIG.spacing['3'],
+    ...APP_CONFIG.shadows.md,
   },
-  loadingText: {
-    fontSize: APP_CONFIG.fonts.sizes.lg,
-    color: APP_CONFIG.colors.textLight,
-  },
-
-  // 인사말 섹션
-  greetingSection: {
-    marginBottom: APP_CONFIG.spacing.xl,
-  },
-  greetingText: {
-    fontSize: APP_CONFIG.fonts.sizes.xl,
-    fontWeight: 'bold',
-    color: APP_CONFIG.colors.text,
-    marginBottom: APP_CONFIG.spacing.xs,
-  },
-  dateText: {
-    fontSize: APP_CONFIG.fonts.sizes.md,
-    color: APP_CONFIG.colors.textLight,
-  },
-
-  // 감정 상태 카드
-  moodCard: {
-    marginBottom: APP_CONFIG.spacing.xl,
-    alignItems: 'center',
-  },
-  moodTitle: {
-    fontSize: APP_CONFIG.fonts.sizes.lg,
-    fontWeight: '600',
-    color: APP_CONFIG.colors.text,
-    textAlign: 'center',
-    marginBottom: APP_CONFIG.spacing.xs,
-  },
-  moodSubtitle: {
-    fontSize: APP_CONFIG.fonts.sizes.md,
-    color: APP_CONFIG.colors.textLight,
-    textAlign: 'center',
-    marginBottom: APP_CONFIG.spacing.lg,
-  },
-  moodDisplay: {
-    marginBottom: APP_CONFIG.spacing.lg,
-  },
-  moodButton: {
-    minWidth: 200,
-  },
-
-  // 빠른 액션
-  quickActions: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    flexWrap: 'wrap',
-  },
-  quickActionButton: {
-    width: (width - APP_CONFIG.spacing.lg * 2 - APP_CONFIG.spacing.md * 3) / 4,
-    alignItems: 'center',
-    padding: APP_CONFIG.spacing.md,
-    backgroundColor: APP_CONFIG.colors.surface,
-    borderRadius: APP_CONFIG.borderRadius.lg,
-    marginBottom: APP_CONFIG.spacing.sm,
-    ...APP_CONFIG.shadows.sm,
-  },
-  quickActionEmoji: {
+  
+  brandEmoji: {
     fontSize: 24,
-    marginBottom: APP_CONFIG.spacing.xs,
   },
-  quickActionText: {
-    fontSize: APP_CONFIG.fonts.sizes.xs,
+  
+  brandText: {
+    fontSize: APP_CONFIG.fonts.sizes['3xl'],
+    fontWeight: APP_CONFIG.fonts.weights.bold,
     color: APP_CONFIG.colors.text,
+  },
+  
+  greetingContainer: {
+    marginLeft: APP_CONFIG.spacing['1'],
+  },
+  
+  greeting: {
+    fontSize: APP_CONFIG.fonts.sizes.xl,
+    fontWeight: APP_CONFIG.fonts.weights.medium,
+    color: APP_CONFIG.colors.textLight,
+    marginBottom: APP_CONFIG.spacing['1'],
+  },
+  
+  subtitle: {
+    fontSize: APP_CONFIG.fonts.sizes.base,
+    color: APP_CONFIG.colors.textMuted,
+  },
+  
+  // 퀵 액션 스타일
+  quickActionsGrid: {
+    flexDirection: 'row',
+    marginBottom: APP_CONFIG.spacing['6'],
+    gap: APP_CONFIG.spacing['3'],
+  },
+  
+  quickActionLarge: {
+    flex: 2,
+  },
+  
+  quickActionColumn: {
+    flex: 1,
+    gap: APP_CONFIG.spacing['3'],
+  },
+  
+  quickActionSmall: {
+    flex: 1,
+  },
+  
+  gradientButton: {
+    borderRadius: APP_CONFIG.borderRadius['2xl'],
+    padding: APP_CONFIG.spacing['4'],
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 80,
+    ...APP_CONFIG.shadows.lg,
+  },
+  
+  gradientButtonEmoji: {
+    fontSize: 28,
+    marginBottom: APP_CONFIG.spacing['2'],
+  },
+  
+  gradientButtonText: {
+    fontSize: APP_CONFIG.fonts.sizes.sm,
+    fontWeight: APP_CONFIG.fonts.weights.semibold,
+    color: APP_CONFIG.colors.textInverse,
     textAlign: 'center',
-    fontWeight: '500',
   },
-
-  // 섹션
-  section: {
-    marginBottom: APP_CONFIG.spacing.xl,
+  
+  // 글래스 카드 스타일
+  glassCard: {
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    borderRadius: APP_CONFIG.borderRadius['2xl'],
+    padding: APP_CONFIG.spacing['6'],
+    marginBottom: APP_CONFIG.spacing['4'],
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+    ...APP_CONFIG.shadows.lg,
+    overflow: 'hidden',
   },
-  sectionTitle: {
+  
+  // 피처드 카드
+  featuredCard: {
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+  },
+  
+  featuredHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: APP_CONFIG.spacing['4'],
+  },
+  
+  featuredIcon: {
+    width: 56,
+    height: 56,
+    borderRadius: APP_CONFIG.borderRadius.lg,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: APP_CONFIG.spacing['4'],
+    ...APP_CONFIG.shadows.md,
+  },
+  
+  featuredEmoji: {
+    fontSize: 24,
+  },
+  
+  featuredContent: {
+    flex: 1,
+  },
+  
+  featuredTitle: {
     fontSize: APP_CONFIG.fonts.sizes.lg,
-    fontWeight: '600',
+    fontWeight: APP_CONFIG.fonts.weights.semibold,
     color: APP_CONFIG.colors.text,
-    marginBottom: APP_CONFIG.spacing.md,
+    marginBottom: APP_CONFIG.spacing['1'],
   },
-
-  // 감정 기록 카드
+  
+  featuredSubtitle: {
+    fontSize: APP_CONFIG.fonts.sizes.sm,
+    color: APP_CONFIG.colors.textLight,
+  },
+  
+  featuredButton: {
+    borderRadius: APP_CONFIG.borderRadius.xl,
+    overflow: 'hidden',
+    ...APP_CONFIG.shadows.md,
+  },
+  
+  featuredButtonGradient: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: APP_CONFIG.spacing['3'],
+    paddingHorizontal: APP_CONFIG.spacing['4'],
+  },
+  
+  featuredButtonText: {
+    fontSize: APP_CONFIG.fonts.sizes.base,
+    fontWeight: APP_CONFIG.fonts.weights.medium,
+    color: APP_CONFIG.colors.textInverse,
+  },
+  
+  featuredButtonArrow: {
+    fontSize: APP_CONFIG.fonts.sizes.lg,
+    color: APP_CONFIG.colors.textInverse,
+    fontWeight: APP_CONFIG.fonts.weights.bold,
+  },
+  
+  // 감정 카드
   emotionCard: {
-    backgroundColor: APP_CONFIG.colors.surface,
+    backgroundColor: 'rgba(255, 255, 255, 0.85)',
   },
+  
   emotionHeader: {
     flexDirection: 'row',
+    alignItems: 'center',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: APP_CONFIG.spacing.sm,
+    marginBottom: APP_CONFIG.spacing['4'],
   },
-  emotionTime: {
-    fontSize: APP_CONFIG.fonts.sizes.sm,
-    color: APP_CONFIG.colors.textMuted,
-  },
-  emotionText: {
-    fontSize: APP_CONFIG.fonts.sizes.md,
-    color: APP_CONFIG.colors.text,
-    lineHeight: 20,
-    marginBottom: APP_CONFIG.spacing.sm,
-  },
-  responseText: {
-    fontSize: APP_CONFIG.fonts.sizes.sm,
-    color: APP_CONFIG.colors.primary,
-    fontStyle: 'italic',
-  },
-
-  // 빈 상태
-  emptyCard: {
-    alignItems: 'center',
-    padding: APP_CONFIG.spacing.xl,
-  },
-  emptyText: {
+  
+  cardTitle: {
     fontSize: APP_CONFIG.fonts.sizes.lg,
-    color: APP_CONFIG.colors.textLight,
-    marginBottom: APP_CONFIG.spacing.xs,
+    fontWeight: APP_CONFIG.fonts.weights.semibold,
+    color: APP_CONFIG.colors.text,
   },
-  emptySubtext: {
-    fontSize: APP_CONFIG.fonts.sizes.md,
-    color: APP_CONFIG.colors.textMuted,
+  
+  moreButton: {
+    paddingVertical: APP_CONFIG.spacing['1'],
+    paddingHorizontal: APP_CONFIG.spacing['3'],
+    backgroundColor: APP_CONFIG.colors.primaryLight,
+    borderRadius: APP_CONFIG.borderRadius.lg,
   },
-
-  // 더보기 버튼
-  viewMoreButton: {
-    alignItems: 'center',
-    padding: APP_CONFIG.spacing.md,
-    marginTop: APP_CONFIG.spacing.sm,
-  },
-  viewMoreText: {
-    fontSize: APP_CONFIG.fonts.sizes.md,
+  
+  moreButtonText: {
+    fontSize: APP_CONFIG.fonts.sizes.sm,
+    fontWeight: APP_CONFIG.fonts.weights.medium,
     color: APP_CONFIG.colors.primary,
-    fontWeight: '500',
   },
-
-  // 인사이트 카드
-  insightCard: {
-    borderLeftWidth: 4,
-    borderLeftColor: APP_CONFIG.colors.primary,
-  },
-  insightHeader: {
+  
+  emotionGrid: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: APP_CONFIG.spacing.sm,
+    flexWrap: 'wrap',
+    gap: APP_CONFIG.spacing['3'],
   },
-  insightTitle: {
-    fontSize: APP_CONFIG.fonts.sizes.md,
-    fontWeight: '600',
-    color: APP_CONFIG.colors.text,
-  },
-  insightBadge: {
-    backgroundColor: APP_CONFIG.colors.success,
-    paddingHorizontal: APP_CONFIG.spacing.sm,
-    paddingVertical: APP_CONFIG.spacing.xs,
-    borderRadius: APP_CONFIG.borderRadius.sm,
-  },
-  insightBadgeText: {
-    fontSize: APP_CONFIG.fonts.sizes.xs,
-    color: 'white',
-    fontWeight: '500',
-  },
-  insightMessage: {
-    fontSize: APP_CONFIG.fonts.sizes.md,
-    color: APP_CONFIG.colors.text,
-    lineHeight: 20,
-    marginBottom: APP_CONFIG.spacing.md,
-  },
-  insightProgress: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  insightProgressText: {
-    fontSize: APP_CONFIG.fonts.sizes.sm,
-    color: APP_CONFIG.colors.textLight,
-    marginRight: APP_CONFIG.spacing.sm,
-  },
-  progressBar: {
+  
+  emotionItem: {
     flex: 1,
-    height: 6,
-    backgroundColor: APP_CONFIG.colors.border,
-    borderRadius: 3,
-    marginRight: APP_CONFIG.spacing.sm,
+    minWidth: '45%',
+    alignItems: 'center',
+    paddingVertical: APP_CONFIG.spacing['3'],
+    paddingHorizontal: APP_CONFIG.spacing['2'],
+    borderRadius: APP_CONFIG.borderRadius.lg,
+    ...APP_CONFIG.shadows.sm,
   },
-  progressFill: {
-    height: '100%',
-    backgroundColor: APP_CONFIG.colors.success,
-    borderRadius: 3,
+  
+  emotionEmoji: {
+    fontSize: 24,
+    marginBottom: APP_CONFIG.spacing['1'],
   },
-  progressPercent: {
+  
+  emotionName: {
     fontSize: APP_CONFIG.fonts.sizes.sm,
-    color: APP_CONFIG.colors.success,
-    fontWeight: '600',
+    fontWeight: APP_CONFIG.fonts.weights.medium,
   },
-
-  bottomSpacer: {
-    height: APP_CONFIG.spacing.xl,
+  
+  // 미니 카드 행
+  miniCardsRow: {
+    flexDirection: 'row',
+    gap: APP_CONFIG.spacing['3'],
+    marginBottom: APP_CONFIG.spacing['4'],
+  },
+  
+  miniCardContainer: {
+    flex: 1,
+  },
+  
+  miniCard: {
+    alignItems: 'center',
+    paddingVertical: APP_CONFIG.spacing['4'],
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    marginBottom: 0,
+  },
+  
+  miniCardIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: APP_CONFIG.borderRadius.lg,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: APP_CONFIG.spacing['2'],
+    ...APP_CONFIG.shadows.sm,
+  },
+  
+  miniCardEmoji: {
+    fontSize: 18,
+  },
+  
+  miniCardTitle: {
+    fontSize: APP_CONFIG.fonts.sizes.xs,
+    fontWeight: APP_CONFIG.fonts.weights.medium,
+    color: APP_CONFIG.colors.textLight,
+    marginBottom: APP_CONFIG.spacing['1'],
+    textAlign: 'center',
+  },
+  
+  miniCardValue: {
+    fontSize: APP_CONFIG.fonts.sizes.lg,
+    fontWeight: APP_CONFIG.fonts.weights.bold,
+    color: APP_CONFIG.colors.text,
+  },
+  
+  // 활동 카드
+  activityCard: {
+    backgroundColor: 'rgba(255, 255, 255, 0.85)',
+  },
+  
+  activityHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: APP_CONFIG.spacing['3'],
+  },
+  
+  activityBadge: {
+    marginLeft: APP_CONFIG.spacing['2'],
+    paddingVertical: APP_CONFIG.spacing['1'],
+    paddingHorizontal: APP_CONFIG.spacing['2'],
+    backgroundColor: APP_CONFIG.colors.accent,
+    borderRadius: APP_CONFIG.borderRadius.base,
+  },
+  
+  activityBadgeText: {
+    fontSize: APP_CONFIG.fonts.sizes.xs,
+    fontWeight: APP_CONFIG.fonts.weights.medium,
+    color: APP_CONFIG.colors.textInverse,
+  },
+  
+  activityText: {
+    fontSize: APP_CONFIG.fonts.sizes.base,
+    color: APP_CONFIG.colors.textLight,
+    lineHeight: 24,
+    marginBottom: APP_CONFIG.spacing['4'],
+    textAlign: 'center',
+  },
+  
+  activityButton: {
+    borderRadius: APP_CONFIG.borderRadius.xl,
+    overflow: 'hidden',
+    alignSelf: 'center',
+    ...APP_CONFIG.shadows.md,
+  },
+  
+  activityButtonGradient: {
+    paddingVertical: APP_CONFIG.spacing['3'],
+    paddingHorizontal: APP_CONFIG.spacing['6'],
+    alignItems: 'center',
+  },
+  
+  activityButtonText: {
+    fontSize: APP_CONFIG.fonts.sizes.base,
+    fontWeight: APP_CONFIG.fonts.weights.medium,
+    color: APP_CONFIG.colors.textInverse,
+  },
+  
+  // 팁 카드
+  tipCard: {
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    position: 'relative',
+  },
+  
+  tipGradient: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    borderRadius: APP_CONFIG.borderRadius['2xl'],
+  },
+  
+  tipHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: APP_CONFIG.spacing['3'],
+  },
+  
+  tipIcon: {
+    fontSize: 24,
+    marginRight: APP_CONFIG.spacing['2'],
+  },
+  
+  tipTitle: {
+    fontSize: APP_CONFIG.fonts.sizes.lg,
+    fontWeight: APP_CONFIG.fonts.weights.semibold,
+    color: APP_CONFIG.colors.text,
+  },
+  
+  tipText: {
+    fontSize: APP_CONFIG.fonts.sizes.base,
+    color: APP_CONFIG.colors.textLight,
+    lineHeight: 24,
+    textAlign: 'center',
+  },
+  
+  // 개발자 버튼 (임시)
+  devButton: {
+    backgroundColor: APP_CONFIG.colors.textMuted,
+    borderRadius: APP_CONFIG.borderRadius.lg,
+    paddingVertical: APP_CONFIG.spacing['2'],
+    paddingHorizontal: APP_CONFIG.spacing['4'],
+    alignSelf: 'center',
+    marginBottom: APP_CONFIG.spacing['4'],
+  },
+  
+  devButtonText: {
+    fontSize: APP_CONFIG.fonts.sizes.sm,
+    color: APP_CONFIG.colors.textInverse,
+    fontWeight: APP_CONFIG.fonts.weights.medium,
   },
 });
 

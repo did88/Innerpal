@@ -3,6 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StatusBar } from 'expo-status-bar';
+<<<<<<< Updated upstream
 import { StyleSheet, View, Text, ActivityIndicator, ScrollView, TouchableOpacity, SafeAreaView, Platform } from 'react-native';
 
 // 화면 import
@@ -20,9 +21,48 @@ const APP_CONFIG = {
     text: '#2D3748',
     border: '#E2E8F0',
     textMuted: '#A0AEC0',
+=======
+import { StyleSheet, View, Text, ActivityIndicator, ScrollView, TouchableOpacity } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { LinearGradient } from 'expo-linear-gradient';
+
+// 설정 파일
+import { APP_CONFIG } from './config/app';
+
+// 실제 구현된 화면들
+import HomeScreen from './screens/HomeScreen';
+import InnerTalkScreen from './screens/InnerTalkScreen';
+import ApiTestScreen from './screens/ApiTestScreen';
+
+// SafeArea를 사용하는 화면 래퍼
+const SafeScreen = ({ children, gradient = false }) => {
+  const insets = useSafeAreaInsets();
+  
+  const content = (
+    <View style={[styles.screenContainer, { 
+      paddingBottom: insets.bottom,
+      paddingTop: 0,
+    }]}>
+      {children}
+    </View>
+  );
+
+  if (gradient) {
+    return (
+      <LinearGradient
+        colors={['rgba(99, 102, 241, 0.05)', 'transparent']}
+        style={styles.gradientContainer}
+      >
+        {content}
+      </LinearGradient>
+    );
+>>>>>>> Stashed changes
   }
+
+  return content;
 };
 
+<<<<<<< Updated upstream
 // 홈 화면
 const HomeScreen = ({ navigation }) => (
   <View style={styles.screenContainer}>
@@ -100,43 +140,116 @@ const HomeScreen = ({ navigation }) => (
   </View>
 );
 
+=======
+// 개선된 인사이트 화면
+>>>>>>> Stashed changes
 const InsightsScreen = ({ navigation }) => (
-  <View style={styles.screenContainer}>
+  <SafeScreen gradient>
     <ScrollView style={styles.scrollView} contentContainerStyle={styles.centerContent}>
-      <Text style={styles.title}>Pal Insights 📊</Text>
-      <Text style={styles.text}>감정 패턴 분석 및 인사이트</Text>
-      <Text style={styles.devNote}>
-        • 감정 히스토리 차트{'\n'}
-        • 주간/월간 감정 리포트{'\n'}
-        • 개인화된 성장 인사이트
-      </Text>
+      <View style={styles.modernHeader}>
+        <LinearGradient
+          colors={APP_CONFIG.colors.gradients.cool}
+          style={styles.iconGradient}
+        >
+          <Text style={styles.headerEmoji}>📊</Text>
+        </LinearGradient>
+        <Text style={styles.title}>Pal Insights</Text>
+        <Text style={styles.subtitle}>감정 패턴 분석 및 인사이트</Text>
+      </View>
+      
+      <View style={styles.featureList}>
+        <View style={styles.featureItem}>
+          <Text style={styles.featureEmoji}>📈</Text>
+          <Text style={styles.featureText}>감정 히스토리 차트</Text>
+        </View>
+        <View style={styles.featureItem}>
+          <Text style={styles.featureEmoji}>📅</Text>
+          <Text style={styles.featureText}>주간/월간 감정 리포트</Text>
+        </View>
+        <View style={styles.featureItem}>
+          <Text style={styles.featureEmoji}>💡</Text>
+          <Text style={styles.featureText}>개인화된 성장 인사이트</Text>
+        </View>
+        <View style={styles.featureItem}>
+          <Text style={styles.featureEmoji}>🎯</Text>
+          <Text style={styles.featureText}>맞춤형 감정 목표 설정</Text>
+        </View>
+      </View>
       
       <TouchableOpacity 
-        style={styles.demoButton}
-        onPress={() => alert('감정 분석 기능을 준비 중입니다!')}
+        style={styles.modernButton}
+        onPress={() => alert('✨ 감정 분석 기능을 준비 중입니다!\n곧 만나볼 수 있어요!')}
       >
-        <Text style={styles.demoButtonText}>감정 패턴 보기</Text>
+        <LinearGradient
+          colors={APP_CONFIG.colors.gradients.cool}
+          style={styles.buttonGradient}
+        >
+          <Text style={styles.buttonText}>감정 패턴 분석하기</Text>
+          <Text style={styles.buttonEmoji}>🚀</Text>
+        </LinearGradient>
       </TouchableOpacity>
     </ScrollView>
-  </View>
+  </SafeScreen>
 );
 
+// 개선된 프로필 화면
 const ProfileScreen = ({ navigation }) => (
-  <View style={styles.screenContainer}>
+  <SafeScreen gradient>
     <ScrollView style={styles.scrollView} contentContainerStyle={styles.centerContent}>
-      <Text style={styles.title}>프로필 ⚙️</Text>
-      <Text style={styles.text}>사용자 설정 및 계정 관리</Text>
-      <Text style={styles.devNote}>
-        • 개인화 설정{'\n'}
-        • 알림 및 보안 설정{'\n'}
-        • 데이터 내보내기
-      </Text>
+      <View style={styles.modernHeader}>
+        <LinearGradient
+          colors={APP_CONFIG.colors.gradients.warm}
+          style={styles.iconGradient}
+        >
+          <Text style={styles.headerEmoji}>⚙️</Text>
+        </LinearGradient>
+        <Text style={styles.title}>프로필 설정</Text>
+        <Text style={styles.subtitle}>사용자 설정 및 계정 관리</Text>
+      </View>
+      
+      <View style={styles.featureList}>
+        <View style={styles.featureItem}>
+          <Text style={styles.featureEmoji}>🎨</Text>
+          <Text style={styles.featureText}>개인화 설정</Text>
+        </View>
+        <View style={styles.featureItem}>
+          <Text style={styles.featureEmoji}>🔔</Text>
+          <Text style={styles.featureText}>알림 및 보안 설정</Text>
+        </View>
+        <View style={styles.featureItem}>
+          <Text style={styles.featureEmoji}>📥</Text>
+          <Text style={styles.featureText}>데이터 내보내기</Text>
+        </View>
+        <View style={styles.featureItem}>
+          <Text style={styles.featureEmoji}>🌙</Text>
+          <Text style={styles.featureText}>다크 모드 지원</Text>
+        </View>
+      </View>
       
       <TouchableOpacity 
-        style={styles.demoButton}
-        onPress={() => alert('프로필 설정 기능을 개발 중입니다!')}
+        style={styles.modernButton}
+        onPress={() => alert('🛠️ 프로필 설정 기능을 개발 중입니다!\n개인화된 경험을 준비하고 있어요!')}
       >
-        <Text style={styles.demoButtonText}>설정 열기</Text>
+        <LinearGradient
+          colors={APP_CONFIG.colors.gradients.warm}
+          style={styles.buttonGradient}
+        >
+          <Text style={styles.buttonText}>설정 열기</Text>
+          <Text style={styles.buttonEmoji}>✨</Text>
+        </LinearGradient>
+      </TouchableOpacity>
+
+      <TouchableOpacity 
+        style={[styles.modernButton, { marginTop: APP_CONFIG.spacing['3'] }]}
+        onPress={() => navigation.navigate('ApiTest')}
+      >
+        <LinearGradient
+          colors={['#6B7280', '#4B5563']}
+          style={styles.buttonGradient}
+        >
+          <Text style={styles.buttonText}>개발자 도구</Text>
+          <Text style={styles.buttonEmoji}>🔧</Text>
+        </LinearGradient>
       </TouchableOpacity>
 
       <TouchableOpacity 
@@ -146,30 +259,55 @@ const ProfileScreen = ({ navigation }) => (
         <Text style={styles.demoButtonText}>🔧 API 테스트</Text>
       </TouchableOpacity>
     </ScrollView>
-  </View>
+  </SafeScreen>
 );
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
+<<<<<<< Updated upstream
+=======
+// 모던 탭 아이콘 컴포넌트
+const TabIcon = ({ focused, emoji, activeEmoji }) => (
+  <View style={[styles.tabIcon, focused && styles.tabIconActive]}>
+    {focused && (
+      <LinearGradient
+        colors={['rgba(99, 102, 241, 0.1)', 'rgba(236, 72, 153, 0.1)']}
+        style={styles.tabIconGradient}
+      />
+    )}
+    <Text style={[styles.tabEmoji, focused && styles.tabEmojiActive]}>
+      {focused ? activeEmoji : emoji}
+    </Text>
+  </View>
+);
+
+// 메인 탭 네비게이터
+>>>>>>> Stashed changes
 function MainTabs() {
   return (
     <Tab.Navigator
       screenOptions={{
         tabBarStyle: {
-          backgroundColor: APP_CONFIG.colors.background,
-          borderTopColor: APP_CONFIG.colors.border,
-          borderTopWidth: 1,
+          backgroundColor: 'rgba(255, 255, 255, 0.95)',
+          borderTopWidth: 0,
+          height: 88,
+          paddingBottom: 20,
           paddingTop: 8,
-          paddingBottom: Platform.OS === 'ios' ? 20 : 8,
-          height: Platform.OS === 'ios' ? 80 : 60,
+          ...APP_CONFIG.shadows.lg,
         },
         tabBarActiveTintColor: APP_CONFIG.colors.primary,
-        tabBarInactiveTintColor: APP_CONFIG.colors.textLight,
+        tabBarInactiveTintColor: APP_CONFIG.colors.textMuted,
         tabBarLabelStyle: {
+<<<<<<< Updated upstream
           fontSize: 12,
           fontWeight: '500',
           marginBottom: Platform.OS === 'ios' ? 0 : 4,
+=======
+          fontSize: APP_CONFIG.fonts.sizes.xs,
+          fontWeight: APP_CONFIG.fonts.weights.medium,
+          marginTop: 4,
+>>>>>>> Stashed changes
         },
         headerShown: false,
         tabBarHideOnKeyboard: true,
@@ -181,9 +319,13 @@ function MainTabs() {
         options={{ 
           title: '홈',
           tabBarIcon: ({ focused }) => (
+<<<<<<< Updated upstream
             <Text style={{ fontSize: 20 }}>
               {focused ? '🏠' : '🏡'}
             </Text>
+=======
+            <TabIcon focused={focused} emoji="🏡" activeEmoji="🏠" />
+>>>>>>> Stashed changes
           ),
         }}
       />
@@ -193,9 +335,13 @@ function MainTabs() {
         options={{ 
           title: '대화',
           tabBarIcon: ({ focused }) => (
+<<<<<<< Updated upstream
             <Text style={{ fontSize: 20 }}>
               {focused ? '💭' : '💬'}
             </Text>
+=======
+            <TabIcon focused={focused} emoji="💬" activeEmoji="💭" />
+>>>>>>> Stashed changes
           ),
         }}
       />
@@ -205,9 +351,13 @@ function MainTabs() {
         options={{ 
           title: '분석',
           tabBarIcon: ({ focused }) => (
+<<<<<<< Updated upstream
             <Text style={{ fontSize: 20 }}>
               {focused ? '📊' : '📈'}
             </Text>
+=======
+            <TabIcon focused={focused} emoji="📈" activeEmoji="📊" />
+>>>>>>> Stashed changes
           ),
         }}
       />
@@ -217,9 +367,13 @@ function MainTabs() {
         options={{ 
           title: '프로필',
           tabBarIcon: ({ focused }) => (
+<<<<<<< Updated upstream
             <Text style={{ fontSize: 20 }}>
               {focused ? '👤' : '👥'}
             </Text>
+=======
+            <TabIcon focused={focused} emoji="👥" activeEmoji="👤" />
+>>>>>>> Stashed changes
           ),
         }}
       />
@@ -233,38 +387,64 @@ export default function App() {
   useEffect(() => {
     setTimeout(() => {
       setLoading(false);
-    }, 1500);
+    }, 2500);
   }, []);
 
+<<<<<<< Updated upstream
+=======
+  // 모던 로딩 화면
+>>>>>>> Stashed changes
   if (loading) {
     return (
-      <SafeAreaView style={styles.safeArea}>
-        <View style={[styles.container, styles.centerContent]}>
-          <Text style={styles.logoText}>Innerpal</Text>
-          <Text style={styles.tagline}>Your inner friend, always</Text>
-          <ActivityIndicator 
-            size="large" 
-            color={APP_CONFIG.colors.primary} 
-            style={{ marginTop: 20 }}
-          />
-          <Text style={[styles.text, { marginTop: 16 }]}>
-            내면의 친구를 깨우는 중...
-          </Text>
+      <View style={styles.fullScreen}>
+        <StatusBar style="dark" />
+        <LinearGradient
+          colors={[
+            'rgba(99, 102, 241, 0.1)',
+            'rgba(236, 72, 153, 0.1)',
+            'transparent'
+          ]}
+          style={styles.loadingGradient}
+        />
+        <View style={styles.loadingContainer}>
+          <View style={styles.logoContainer}>
+            <LinearGradient
+              colors={APP_CONFIG.colors.gradients.primary}
+              style={styles.loadingLogo}
+            >
+              <Text style={styles.loadingEmoji}>💙</Text>
+            </LinearGradient>
+            <Text style={styles.logoText}>Innerpal</Text>
+            <Text style={styles.tagline}>Your inner friend, always</Text>
+          </View>
+          
+          <View style={styles.loadingIndicatorContainer}>
+            <ActivityIndicator 
+              size="large" 
+              color={APP_CONFIG.colors.primary} 
+            />
+            <Text style={styles.loadingText}>
+              내면의 친구를 깨우는 중...
+            </Text>
+            <View style={styles.loadingDots}>
+              <Text style={styles.loadingDot}>✨</Text>
+              <Text style={styles.loadingDot}>💭</Text>
+              <Text style={styles.loadingDot}>🌟</Text>
+            </View>
+          </View>
         </View>
-      </SafeAreaView>
+      </View>
     );
   }
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <View style={styles.fullScreen}>
       <NavigationContainer>
-        <StatusBar 
-          style="dark" 
-          backgroundColor={APP_CONFIG.colors.background} 
-        />
+        <StatusBar style="dark" />
         <Stack.Navigator screenOptions={{ headerShown: false }}>
           <Stack.Screen name="MainTabs" component={MainTabs} />
           <Stack.Screen 
+<<<<<<< Updated upstream
             name="EmotionInput" 
             component={EmotionInputScreen}
             options={{
@@ -289,6 +469,8 @@ export default function App() {
             }}
           />
           <Stack.Screen 
+=======
+>>>>>>> Stashed changes
             name="ApiTest" 
             component={ApiTestScreen}
             options={{
@@ -296,100 +478,117 @@ export default function App() {
               title: 'API 연결 테스트',
               headerStyle: {
                 backgroundColor: APP_CONFIG.colors.background,
+<<<<<<< Updated upstream
               },
               headerTitleStyle: {
                 color: APP_CONFIG.colors.text,
                 fontWeight: '600',
+=======
+                ...APP_CONFIG.shadows.sm,
+              },
+              headerTitleStyle: {
+                color: APP_CONFIG.colors.text,
+                fontWeight: APP_CONFIG.fonts.weights.semibold,
+                fontSize: APP_CONFIG.fonts.sizes.lg,
+>>>>>>> Stashed changes
               },
               headerTintColor: APP_CONFIG.colors.primary,
             }}
           />
         </Stack.Navigator>
       </NavigationContainer>
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
+  fullScreen: {
     flex: 1,
-    backgroundColor: '#FEFCF0',
+    backgroundColor: APP_CONFIG.colors.background,
   },
-  container: {
+  
+  gradientContainer: {
     flex: 1,
-    backgroundColor: '#FEFCF0',
   },
   
   screenContainer: {
     flex: 1,
+<<<<<<< Updated upstream
     backgroundColor: '#FEFCF0',
     paddingBottom: Platform.OS === 'ios' ? 80 : 60,
+=======
+    backgroundColor: 'transparent',
+>>>>>>> Stashed changes
   },
   
   scrollView: {
     flex: 1,
   },
   
-  scrollContent: {
-    paddingHorizontal: 20,
-    paddingTop: 20,
-    paddingBottom: 20,
-  },
-  
   centerContent: {
     flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 24,
-    paddingTop: 40,
+    paddingHorizontal: APP_CONFIG.spacing['6'],
+    paddingVertical: APP_CONFIG.spacing['8'],
   },
   
+<<<<<<< Updated upstream
   header: {
     alignItems: 'center',
     marginBottom: 24,
-  },
-  logoText: {
-    fontSize: 42,
-    fontWeight: 'bold',
-    color: '#4A5568',
-    textAlign: 'center',
-  },
-  tagline: {
-    fontSize: 16,
-    color: '#718096',
-    textAlign: 'center',
-    marginTop: 8,
-    fontStyle: 'italic',
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#4A5568',
-    marginBottom: 8,
-    textAlign: 'center',
-  },
-  subtitle: {
-    fontSize: 20,
-    color: '#718096',
-    marginBottom: 8,
-    textAlign: 'center',
-  },
-  text: {
-    fontSize: 16,
-    color: '#2D3748',
-    textAlign: 'center',
-    marginBottom: 8,
-  },
-  devNote: {
-    fontSize: 14,
-    color: '#A0AEC0',
-    textAlign: 'center',
-    fontStyle: 'italic',
-    marginTop: 16,
-    marginBottom: 24,
-    lineHeight: 20,
+=======
+  // 로딩 화면 스타일
+  loadingGradient: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+>>>>>>> Stashed changes
   },
   
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: APP_CONFIG.spacing['6'],
+  },
+  
+  logoContainer: {
+    alignItems: 'center',
+    marginBottom: APP_CONFIG.spacing['12'],
+  },
+  
+  loadingLogo: {
+    width: 80,
+    height: 80,
+    borderRadius: APP_CONFIG.borderRadius['2xl'],
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: APP_CONFIG.spacing['4'],
+    ...APP_CONFIG.shadows.xl,
+  },
+  
+  loadingEmoji: {
+    fontSize: 36,
+  },
+  
+  logoText: {
+    fontSize: APP_CONFIG.fonts.sizes['5xl'],
+    fontWeight: APP_CONFIG.fonts.weights.bold,
+    color: APP_CONFIG.colors.text,
+    marginBottom: APP_CONFIG.spacing['2'],
+  },
+  
+  tagline: {
+    fontSize: APP_CONFIG.fonts.sizes.lg,
+    color: APP_CONFIG.colors.textLight,
+    fontStyle: 'italic',
+    textAlign: 'center',
+  },
+  
+<<<<<<< Updated upstream
   quickActions: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -398,19 +597,155 @@ const styles = StyleSheet.create({
   },
   actionButton: {
     width: '22%',
+=======
+  loadingIndicatorContainer: {
+>>>>>>> Stashed changes
     alignItems: 'center',
-    padding: 12,
-    backgroundColor: 'white',
-    borderRadius: 12,
-    marginBottom: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
   },
-  actionEmoji: {
+  
+  loadingText: {
+    fontSize: APP_CONFIG.fonts.sizes.base,
+    color: APP_CONFIG.colors.textLight,
+    marginTop: APP_CONFIG.spacing['4'],
+    textAlign: 'center',
+  },
+  
+  loadingDots: {
+    flexDirection: 'row',
+    marginTop: APP_CONFIG.spacing['2'],
+    gap: APP_CONFIG.spacing['2'],
+  },
+  
+  loadingDot: {
+    fontSize: 16,
+    opacity: 0.7,
+  },
+  
+  // 모던 헤더 스타일
+  modernHeader: {
+    alignItems: 'center',
+    marginBottom: APP_CONFIG.spacing['8'],
+  },
+  
+  iconGradient: {
+    width: 72,
+    height: 72,
+    borderRadius: APP_CONFIG.borderRadius['2xl'],
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: APP_CONFIG.spacing['4'],
+    ...APP_CONFIG.shadows.lg,
+  },
+  
+  headerEmoji: {
+    fontSize: 32,
+  },
+  
+  title: {
+    fontSize: APP_CONFIG.fonts.sizes['3xl'],
+    fontWeight: APP_CONFIG.fonts.weights.bold,
+    color: APP_CONFIG.colors.text,
+    marginBottom: APP_CONFIG.spacing['2'],
+    textAlign: 'center',
+  },
+  
+  subtitle: {
+    fontSize: APP_CONFIG.fonts.sizes.base,
+    color: APP_CONFIG.colors.textLight,
+    textAlign: 'center',
+    lineHeight: 24,
+  },
+  
+  // 기능 리스트
+  featureList: {
+    width: '100%',
+    marginBottom: APP_CONFIG.spacing['8'],
+  },
+  
+  featureItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: APP_CONFIG.spacing['4'],
+    paddingHorizontal: APP_CONFIG.spacing['5'],
+    backgroundColor: 'rgba(255, 255, 255, 0.7)',
+    borderRadius: APP_CONFIG.borderRadius.xl,
+    marginBottom: APP_CONFIG.spacing['3'],
+    ...APP_CONFIG.shadows.sm,
+  },
+  
+  featureEmoji: {
+    fontSize: 20,
+    marginRight: APP_CONFIG.spacing['4'],
+    width: 28,
+    textAlign: 'center',
+  },
+  
+  featureText: {
+    fontSize: APP_CONFIG.fonts.sizes.base,
+    color: APP_CONFIG.colors.text,
+    fontWeight: APP_CONFIG.fonts.weights.medium,
+    flex: 1,
+  },
+  
+  // 모던 버튼
+  modernButton: {
+    borderRadius: APP_CONFIG.borderRadius.xl,
+    overflow: 'hidden',
+    ...APP_CONFIG.shadows.lg,
+    marginBottom: APP_CONFIG.spacing['2'],
+  },
+  
+  buttonGradient: {
+    flexDirection: 'row',
+    paddingVertical: APP_CONFIG.spacing['4'],
+    paddingHorizontal: APP_CONFIG.spacing['8'],
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: APP_CONFIG.spacing['2'],
+  },
+  
+  buttonText: {
+    fontSize: APP_CONFIG.fonts.sizes.base,
+    fontWeight: APP_CONFIG.fonts.weights.semibold,
+    color: APP_CONFIG.colors.textInverse,
+  },
+  
+  buttonEmoji: {
+    fontSize: 16,
+  },
+  
+  // 탭 아이콘 스타일
+  tabIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: APP_CONFIG.borderRadius.lg,
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'relative',
+    overflow: 'hidden',
+  },
+  
+  tabIconActive: {
+    ...APP_CONFIG.shadows.sm,
+  },
+  
+  tabIconGradient: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    borderRadius: APP_CONFIG.borderRadius.lg,
+  },
+  
+  tabEmoji: {
+    fontSize: 22,
+    zIndex: 1,
+  },
+  
+  tabEmojiActive: {
     fontSize: 24,
+<<<<<<< Updated upstream
     marginBottom: 4,
   },
   actionText: {
@@ -476,5 +811,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     textAlign: 'center',
+=======
+>>>>>>> Stashed changes
   },
 });

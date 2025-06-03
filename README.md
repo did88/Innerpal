@@ -16,7 +16,14 @@ Innerpal은 다음과 같은 차별화된 기능을 제공합니다:
 
 ## 🚀 최신 업데이트 (Week 3-4)
 
+<<<<<<< Updated upstream
 ### ✨ 새로 추가된 핵심 기능들
+=======
+### Frontend
+- **React Native 0.79.2**: 크로스 플랫폼 모바일 개발
+- **Expo SDK 53**: 개발 도구 및 배포 플랫폼
+- **React Navigation 7**: 네비게이션 시스템 (Stack & Bottom Tabs)
+>>>>>>> Stashed changes
 
 #### 1. 📝 감정 입력 폼 (EmotionInputScreen)
 - **직관적인 감정 선택**: 7가지 감정 카드로 쉬운 선택
@@ -25,6 +32,7 @@ Innerpal은 다음과 같은 차별화된 기능을 제공합니다:
 - **자유 텍스트**: 1000자 제한 감정 표현
 - **실시간 검증**: 사용자 친화적 입력 가이드
 
+<<<<<<< Updated upstream
 #### 2. 🧠 CBT 가이드 시스템 (CBTSessionScreen)
 **전문적인 4단계 인지행동치료 프로세스:**
 - **생각 인식** → **증거 탐색** → **대안적 사고** → **행동 계획**
@@ -52,11 +60,38 @@ Innerpal은 다음과 같은 차별화된 기능을 제공합니다:
    ↓           ↓          ↓           ↓          ↓        ↓
 🏠 시작 → 📝 감정입력 → 💭 AI대화 → 🧠 CBT → 💡 분석 → 🌱 개선
 ```
+=======
+### 핵심 라이브러리
+- **React Hook Form 7.56**: 폼 관리
+- **React Native Elements 3.4**: UI 컴포넌트
+- **React Native Chart Kit 6.12**: 데이터 시각화
+- **Date-fns 4.1**: 날짜 처리
+- **React Native Vector Icons 10.2**: 아이콘 시스템
+
+## 📱 현재 구현된 기능
+
+### ✅ 완료된 핵심 기능
+- [x] **프로젝트 기본 구조 설정** - Expo + React Native 환경
+- [x] **네비게이션 시스템** - Bottom Tab + Stack Navigation
+- [x] **홈 화면** - 퀵 액션 버튼 및 카드 기반 UI
+- [x] **Inner Talk 화면** - AI와의 대화 인터페이스
+- [x] **API 연결 테스트** - Supabase 및 OpenAI 연동 확인
+- [x] **반응형 UI 시스템** - SafeArea 적용 및 크로스 플랫폼 대응
+- [x] **로딩 화면** - 브랜드 아이덴티티가 반영된 스플래시
+
+### 🎨 UI/UX 구현 상황
+- [x] **브랜드 컬러 시스템** - 차분한 인디고 블루 (#4A5568) 기반
+- [x] **감정 카테고리 컬러** - 7가지 감정별 색상 정의
+- [x] **카드 기반 레이아웃** - 그림자 효과 및 borderLeft 강조
+- [x] **탭 네비게이션** - 이모지 아이콘과 활성 상태 표시
+- [x] **반응형 버튼** - activeOpacity 및 터치 피드백
+>>>>>>> Stashed changes
 
 ## 📁 프로젝트 구조
 
 ```
 Innerpal/
+<<<<<<< Updated upstream
 ├── App.js                      # 메인 네비게이션 (업데이트됨)
 ├── screens/
 │   ├── InnerTalkScreen.js      # AI 대화 (대폭 개선)
@@ -105,6 +140,147 @@ Teal: #38B2AC       (혐오 - 차분한 청록)
 ```
 
 ## 🧠 CBT 기능 상세
+=======
+├── App.js                 # 메인 앱 진입점 (Navigation 설정)
+├── package.json           # 의존성 및 스크립트
+├── config/
+│   └── app.js             # 앱 설정 (컬러, 폰트, 감정 설정)
+├── lib/
+│   └── supabase.js        # Supabase 클라이언트 및 DB 헬퍼
+├── services/
+│   └── openai.js          # OpenAI GPT API 서비스
+├── components/
+│   └── common.js          # 공통 UI 컴포넌트
+├── screens/
+│   ├── HomeScreen.js      # 메인 홈 화면 (현재 App.js에 임베드)
+│   ├── InnerTalkScreen.js # AI 대화 화면
+│   └── ApiTestScreen.js   # API 연결 테스트 화면
+├── hooks/
+│   └── index.js           # 커스텀 React 훅들
+├── utils/
+│   └── index.js           # 유틸리티 함수들
+└── assets/                # 이미지 및 정적 자원
+```
+
+## 🛠 설치 및 실행
+
+### 필수 조건
+- Node.js (16.0 이상)
+- npm 또는 yarn
+- Expo CLI (`npm install -g @expo/cli`)
+- 모바일 기기의 Expo Go 앱
+
+### 설치 단계
+
+1. **저장소 클론**
+```bash
+git clone https://github.com/did88/Innerpal.git
+cd Innerpal
+```
+
+2. **의존성 설치**
+```bash
+npm install
+```
+
+3. **환경 변수 설정**
+```bash
+cp .env.example .env
+```
+
+`.env` 파일을 편집하여 다음 값들을 설정하세요:
+```env
+EXPO_PUBLIC_SUPABASE_URL=your_supabase_project_url
+EXPO_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+EXPO_PUBLIC_OPENAI_API_KEY=your_openai_api_key
+```
+
+4. **개발 서버 시작**
+```bash
+npm start
+```
+
+5. **모바일에서 실행**
+   - 스마트폰에 Expo Go 앱 설치
+   - 터미널에 표시된 QR 코드 스캔
+   - 또는 `a` (Android) / `i` (iOS) 키를 눌러 에뮬레이터에서 실행
+
+## 📊 사용 가능한 스크립트
+
+```bash
+# 개발 서버 시작
+npm start
+
+# Android에서 실행
+npm run android
+
+# iOS에서 실행 (macOS 필요)
+npm run ios
+
+# 웹에서 실행
+npm run web
+```
+
+## 🔧 개발 현황 및 진행 상황
+
+### ✅ Week 1-2: 기본 구조 완료
+- [x] Expo + React Native 프로젝트 초기화
+- [x] React Navigation 설정 (Bottom Tabs + Stack)
+- [x] Supabase 클라이언트 연동
+- [x] OpenAI API 서비스 구현
+- [x] 기본 UI 컴포넌트 시스템
+- [x] 홈 화면 구현 (퀵 액션 + 카드 레이아웃)
+- [x] Inner Talk 화면 기본 틀
+- [x] API 테스트 화면
+
+### 🚧 Week 3-4: 현재 진행 중
+- [ ] **사용자 인증 시스템** (Supabase Auth)
+- [ ] **Inner Talk 실제 대화 기능** (OpenAI 연동)
+- [ ] **감정 입력 폼** (React Hook Form)
+- [ ] **감정 기록 저장** (Supabase DB)
+- [ ] **HomeScreen.js 독립 파일화** (현재 App.js에 임베드됨)
+
+### 📋 Week 5-6: 예정 기능
+- [ ] **CBT 질문 시퀀스 구현**
+- [ ] **감정 히스토리 차트** (Chart Kit)
+- [ ] **감정 패턴 인사이트**
+- [ ] **푸시 알림 시스템** (Expo Notifications)
+- [ ] **프로필 설정 화면**
+
+### 🔮 Week 7-8: 고도화
+- [ ] **감정 DNA 분석 시스템**
+- [ ] **역할극 기반 CBT**
+- [ ] **감정 미래 예측**
+- [ ] **익명 커뮤니티 기능**
+- [ ] **데이터 시각화 고도화**
+
+## 🎨 디자인 시스템
+
+### 컬러 팔레트
+```javascript
+const APP_CONFIG = {
+  colors: {
+    background: '#FEFCF0',    // 크림 화이트
+    primary: '#4A5568',       // 차분한 인디고 블루
+    textLight: '#718096',     // 밝은 회색
+    text: '#2D3748',          // 진한 회색
+    border: '#E2E8F0',        // 테두리
+    textMuted: '#A0AEC0',     // 음소거된 텍스트
+  }
+};
+```
+
+### 감정 카테고리
+- 😊 기쁨 (Joy) - `#48BB78`
+- 😢 슬픔 (Sadness) - `#4299E1`
+- 😠 분노 (Anger) - `#F56565`
+- 😰 불안 (Fear) - `#ED8936`
+- 😮 놀람 (Surprise) - `#A78BFA`
+- 😤 혐오 (Disgust) - `#38B2AC`
+- 😐 평온 (Neutral) - `#718096`
+
+## 🔐 환경 변수 설정
+>>>>>>> Stashed changes
 
 ### 4단계 인지행동치료 프로세스
 
@@ -167,6 +343,7 @@ Animated.parallel([
 
 ## 🚀 설치 및 실행
 
+<<<<<<< Updated upstream
 ### 빠른 시작
 ```bash
 git clone https://github.com/did88/Innerpal.git
@@ -232,6 +409,47 @@ npm start
 - [ ] 음성 감정 인식
 - [ ] 전문가 연결 서비스
 - [ ] 연구 데이터 기여 옵션
+=======
+// 결과:
+// [
+//   { step: "사고 인식", question: "그 상황에서 어떤 생각이 들었나요?" },
+//   { step: "증거 탐색", question: "그 생각을 뒷받침하는 사실은 무엇인가요?" },
+//   { step: "대안 탐색", question: "다른 해석의 여지는 없을까요?" }
+// ]
+```
+
+### 3. 현재 구현된 화면들
+
+#### 홈 화면 (현재 App.js에 임베드)
+- 4개 퀵 액션 버튼 (Inner Talk, 감정 분석, API 테스트, 응급 위로)
+- 카드 기반 정보 표시 (새 기능, API 테스트, 인사이트, 기록, 팁)
+- 반응형 레이아웃 및 그림자 효과
+
+#### Inner Talk 화면
+- AI와의 실시간 대화 인터페이스
+- 감정 입력 및 응답 시스템
+
+#### API 테스트 화면
+- Supabase 연결 테스트
+- OpenAI API 응답 확인
+- 실시간 연결 상태 모니터링
+
+## 🚨 현재 알려진 이슈
+
+### 1. 구조적 개선 필요
+- **HomeScreen 독립화**: 현재 App.js에 임베드된 HomeScreen 컴포넌트를 별도 파일로 분리 필요
+- **config/app.js 활용**: APP_CONFIG가 App.js에 하드코딩되어 있음
+
+### 2. 기능 구현 필요
+- **실제 AI 대화**: Inner Talk 화면에서 OpenAI API 실제 연동
+- **감정 저장**: 사용자 입력을 Supabase에 저장하는 기능
+- **사용자 인증**: 익명 또는 계정 기반 인증 시스템
+
+### 3. 성능 및 UX
+- **로딩 상태**: API 호출 시 로딩 인디케이터 추가
+- **에러 핸들링**: 네트워크 오류 및 API 오류 처리
+- **오프라인 모드**: 기본적인 오프라인 기능 지원
+>>>>>>> Stashed changes
 
 ## 🤝 기여하기
 
