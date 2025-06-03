@@ -6,18 +6,16 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, View, Text, ActivityIndicator, ScrollView, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
-// 설정 파일
 import { APP_CONFIG } from './config/app';
 
-// 화면 컴포넌트들
 import HomeScreen from './screens/HomeScreen';
 import InnerTalkScreen from './screens/InnerTalkScreen';
 import EmotionAnalysisScreen from './screens/EmotionAnalysisScreen';
+import EmotionResultScreen from './screens/EmotionResultScreen';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
-// 모던 탭 아이콘 컴포넌트
 const TabIcon = ({ focused, emoji, activeEmoji }) => (
   <View style={[styles.tabIcon, focused && styles.tabIconActive]}>
     {focused && (
@@ -32,7 +30,6 @@ const TabIcon = ({ focused, emoji, activeEmoji }) => (
   </View>
 );
 
-// 인사이트 화면
 const InsightsScreen = ({ navigation }) => (
   <View style={styles.screenContainer}>
     <ScrollView style={styles.scrollView} contentContainerStyle={styles.centerContent}>
@@ -46,8 +43,8 @@ const InsightsScreen = ({ navigation }) => (
         <Text style={styles.title}>감정 인사이트</Text>
         <Text style={styles.subtitle}>감정 패턴 분석 및 리포트</Text>
       </View>
-      
-      <TouchableOpacity 
+
+      <TouchableOpacity
         style={styles.modernButton}
         onPress={() => navigation.navigate('EmotionAnalysis')}
       >
@@ -63,7 +60,6 @@ const InsightsScreen = ({ navigation }) => (
   </View>
 );
 
-// 프로필 화면
 const ProfileScreen = ({ navigation }) => (
   <View style={styles.screenContainer}>
     <ScrollView style={styles.scrollView} contentContainerStyle={styles.centerContent}>
@@ -77,7 +73,7 @@ const ProfileScreen = ({ navigation }) => (
         <Text style={styles.title}>내 프로필</Text>
         <Text style={styles.subtitle}>개인 설정 및 데이터 관리</Text>
       </View>
-      
+
       <View style={styles.profileContent}>
         <Text style={styles.comingSoonText}>프로필 기능이 곧 업데이트됩니다 ✨</Text>
       </View>
@@ -85,117 +81,54 @@ const ProfileScreen = ({ navigation }) => (
   </View>
 );
 
-// 메인 탭 네비게이터
 function MainTabs() {
   return (
-    <Tab.Navigator
-      screenOptions={{
-        tabBarStyle: {
-          backgroundColor: 'rgba(255, 255, 255, 0.95)',
-          borderTopWidth: 0,
-          height: 88,
-          paddingBottom: 20,
-          paddingTop: 8,
-          shadowColor: '#000',
-          shadowOffset: { width: 0, height: -2 },
-          shadowOpacity: 0.1,
-          shadowRadius: 8,
-          elevation: 8,
-        },
-        tabBarActiveTintColor: '#7C3AED',
-        tabBarInactiveTintColor: '#9CA3AF',
-        tabBarLabelStyle: {
-          fontSize: 12,
-          fontWeight: '500',
-          marginTop: 4,
-        },
-        headerShown: false,
-        tabBarHideOnKeyboard: true,
-      }}
-    >
-      <Tab.Screen 
-        name="Home" 
-        component={HomeScreen}
-        options={{ 
-          title: '홈',
-          tabBarIcon: ({ focused }) => (
-            <TabIcon focused={focused} emoji="🏡" activeEmoji="🏠" />
-          ),
-        }}
-      />
-      <Tab.Screen 
-        name="InnerTalk" 
-        component={InnerTalkScreen}
-        options={{ 
-          title: '대화',
-          tabBarIcon: ({ focused }) => (
-            <TabIcon focused={focused} emoji="💬" activeEmoji="💭" />
-          ),
-        }}
-      />
-      <Tab.Screen 
-        name="Insights" 
-        component={InsightsScreen}
-        options={{ 
-          title: '분석',
-          tabBarIcon: ({ focused }) => (
-            <TabIcon focused={focused} emoji="📈" activeEmoji="📊" />
-          ),
-        }}
-      />
-      <Tab.Screen 
-        name="Profile" 
-        component={ProfileScreen}
-        options={{ 
-          title: '프로필',
-          tabBarIcon: ({ focused }) => (
-            <TabIcon focused={focused} emoji="👥" activeEmoji="👤" />
-          ),
-        }}
-      />
+    <Tab.Navigator screenOptions={{
+      tabBarStyle: {
+        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+        borderTopWidth: 0,
+        height: 88,
+        paddingBottom: 20,
+        paddingTop: 8,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: -2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+        elevation: 8,
+      },
+      tabBarActiveTintColor: '#7C3AED',
+      tabBarInactiveTintColor: '#9CA3AF',
+      tabBarLabelStyle: { fontSize: 12, fontWeight: '500', marginTop: 4 },
+      headerShown: false,
+      tabBarHideOnKeyboard: true,
+    }}>
+      <Tab.Screen name="Home" component={HomeScreen} options={{ title: '홈', tabBarIcon: ({ focused }) => (<TabIcon focused={focused} emoji="🏡" activeEmoji="🏠" />) }} />
+      <Tab.Screen name="InnerTalk" component={InnerTalkScreen} options={{ title: '대화', tabBarIcon: ({ focused }) => (<TabIcon focused={focused} emoji="💬" activeEmoji="💭" />) }} />
+      <Tab.Screen name="Insights" component={InsightsScreen} options={{ title: '분석', tabBarIcon: ({ focused }) => (<TabIcon focused={focused} emoji="📈" activeEmoji="📊" />) }} />
+      <Tab.Screen name="Profile" component={ProfileScreen} options={{ title: '프로필', tabBarIcon: ({ focused }) => (<TabIcon focused={focused} emoji="👥" activeEmoji="👤" />) }} />
     </Tab.Navigator>
   );
 }
 
 export default function App() {
   const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    setTimeout(() => {
-      setLoading(false);
-    }, 2500);
-  }, []);
-
-  // 모던 로딩 화면
+  useEffect(() => { setTimeout(() => { setLoading(false); }, 2500); }, []);
   if (loading) {
     return (
       <View style={styles.fullScreen}>
         <StatusBar style="dark" />
-        <LinearGradient
-          colors={[
-            'rgba(99, 102, 241, 0.1)',
-            'rgba(236, 72, 153, 0.1)',
-            'transparent'
-          ]}
-          style={styles.loadingGradient}
-        />
+        <LinearGradient colors={[ 'rgba(99, 102, 241, 0.1)', 'rgba(236, 72, 153, 0.1)', 'transparent' ]} style={styles.loadingGradient} />
         <View style={styles.loadingContainer}>
           <View style={styles.logoContainer}>
-            <LinearGradient
-              colors={['#7C3AED', '#A855F7']}
-              style={styles.loadingLogo}
-            >
+            <LinearGradient colors={['#7C3AED', '#A855F7']} style={styles.loadingLogo}>
               <Text style={styles.loadingEmoji}>💙</Text>
             </LinearGradient>
             <Text style={styles.logoText}>Innerpal</Text>
             <Text style={styles.tagline}>Your inner friend, always</Text>
           </View>
-          
           <View style={styles.loadingIndicatorContainer}>
             <ActivityIndicator size="large" color="#7C3AED" />
-            <Text style={styles.loadingText}>
-              내면의 친구를 깨우는 중...
-            </Text>
+            <Text style={styles.loadingText}>내면의 친구를 깨우는 중...</Text>
           </View>
         </View>
       </View>
@@ -208,237 +141,143 @@ export default function App() {
         <StatusBar style="dark" />
         <Stack.Navigator screenOptions={{ headerShown: false }}>
           <Stack.Screen name="MainTabs" component={MainTabs} />
-          <Stack.Screen 
-            name="EmotionAnalysis" 
-            component={EmotionAnalysisScreen}
-            options={{
-              headerShown: true,
-              title: '감정 분석',
-              headerStyle: {
-                backgroundColor: '#FEFCF0',
-                shadowColor: '#000',
-                shadowOffset: { width: 0, height: 1 },
-                shadowOpacity: 0.1,
-                shadowRadius: 4,
-                elevation: 4,
-              },
-              headerTitleStyle: {
-                color: '#1F2937',
-                fontWeight: '600',
-                fontSize: 18,
-              },
-              headerTintColor: '#7C3AED',
-            }}
-          />
+          <Stack.Screen name="EmotionAnalysis" component={EmotionAnalysisScreen} options={{ headerShown: true, title: '감정 분석', headerStyle: { backgroundColor: '#FEFCF0', shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.1, shadowRadius: 4, elevation: 4 }, headerTitleStyle: { color: '#1F2937', fontWeight: '600', fontSize: 18 }, headerTintColor: '#7C3AED' }} />
+          <Stack.Screen name="EmotionResultScreen" component={EmotionResultScreen} options={{ headerShown: true, title: '감정 결과', headerStyle: { backgroundColor: '#FEFCF0' }, headerTintColor: '#7C3AED', headerTitleStyle: { fontWeight: '600', fontSize: 18 } }} />
         </Stack.Navigator>
       </NavigationContainer>
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   fullScreen: {
     flex: 1,
     backgroundColor: '#FEFCF0',
   },
-  
-  screenContainer: {
-    flex: 1,
-    backgroundColor: 'transparent',
-  },
-  
-  scrollView: {
-    flex: 1,
-  },
-  
-  centerContent: {
-    flexGrow: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 24,
-    paddingVertical: 32,
-  },
-  
-  // 로딩 화면 스타일
   loadingGradient: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
+    ...StyleSheet.absoluteFillObject,
   },
-  
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 24,
   },
-  
   logoContainer: {
     alignItems: 'center',
-    marginBottom: 48,
+    marginBottom: 24,
   },
-  
   loadingLogo: {
     width: 80,
     height: 80,
-    borderRadius: 24,
+    borderRadius: 40,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 12,
-    elevation: 8,
+    marginBottom: 12,
   },
-  
   loadingEmoji: {
     fontSize: 36,
   },
-  
   logoText: {
-    fontSize: 32,
+    fontSize: 24,
     fontWeight: 'bold',
-    color: '#1F2937',
-    marginBottom: 8,
+    color: '#7C3AED',
   },
-  
   tagline: {
-    fontSize: 16,
+    fontSize: 14,
     color: '#6B7280',
-    fontStyle: 'italic',
-    textAlign: 'center',
   },
-  
   loadingIndicatorContainer: {
     alignItems: 'center',
   },
-  
   loadingText: {
-    fontSize: 16,
+    marginTop: 12,
+    fontSize: 14,
     color: '#6B7280',
-    marginTop: 16,
-    textAlign: 'center',
   },
-  
-  // 모던 헤더 스타일
+  screenContainer: {
+    flex: 1,
+    backgroundColor: '#FEFCF0',
+  },
+  scrollView: {
+    flex: 1,
+  },
+  centerContent: {
+    alignItems: 'center',
+    paddingVertical: 32,
+    paddingHorizontal: 16,
+  },
   modernHeader: {
     alignItems: 'center',
     marginBottom: 32,
   },
-  
   iconGradient: {
-    width: 72,
-    height: 72,
-    borderRadius: 24,
+    width: 64,
+    height: 64,
+    borderRadius: 32,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
-    elevation: 6,
+    marginBottom: 12,
   },
-  
   headerEmoji: {
-    fontSize: 32,
-  },
-  
-  title: {
     fontSize: 28,
+  },
+  title: {
+    fontSize: 22,
     fontWeight: 'bold',
     color: '#1F2937',
-    marginBottom: 8,
-    textAlign: 'center',
   },
-  
   subtitle: {
-    fontSize: 16,
+    fontSize: 14,
     color: '#6B7280',
-    textAlign: 'center',
-    lineHeight: 24,
   },
-  
-  // 모던 버튼
   modernButton: {
     borderRadius: 16,
     overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
-    elevation: 6,
-    marginBottom: 8,
+    width: '100%',
+    maxWidth: 320,
+    marginTop: 16,
   },
-  
   buttonGradient: {
-    flexDirection: 'row',
     paddingVertical: 16,
-    paddingHorizontal: 32,
-    alignItems: 'center',
+    paddingHorizontal: 24,
+    flexDirection: 'row',
     justifyContent: 'center',
-    gap: 8,
+    alignItems: 'center',
   },
-  
   buttonText: {
     fontSize: 16,
     fontWeight: '600',
-    color: 'white',
+    color: '#FFFFFF',
+    marginRight: 8,
   },
-  
   buttonEmoji: {
-    fontSize: 16,
+    fontSize: 18,
   },
-  
-  // 프로필 화면 추가 스타일
   profileContent: {
+    marginTop: 24,
     alignItems: 'center',
-    padding: 24,
   },
-  
   comingSoonText: {
     fontSize: 16,
-    color: '#6B7280',
-    textAlign: 'center',
-    fontStyle: 'italic',
+    color: '#9CA3AF',
   },
-  
-  // 탭 아이콘 스타일
   tabIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 12,
+    position: 'relative',
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     justifyContent: 'center',
     alignItems: 'center',
-    position: 'relative',
-    overflow: 'hidden',
   },
-  
   tabIconActive: {
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
+    backgroundColor: 'rgba(124, 58, 237, 0.1)',
   },
-  
   tabIconGradient: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    borderRadius: 12,
+    ...StyleSheet.absoluteFillObject,
+    borderRadius: 22,
   },
-  
   tabEmoji: {
     fontSize: 22,
-    zIndex: 1,
   },
-  
   tabEmojiActive: {
     fontSize: 24,
   },
