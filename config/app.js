@@ -1,69 +1,54 @@
-// Innerpal 앱 설정 - 모던 디자인 시스템
+// Innerpal 앱 설정 - 미니멀 디자인 시스템 (흰색 + 보라색)
 export const APP_CONFIG = {
   name: 'Innerpal',
   version: '1.0.0',
   description: 'Your inner friend, always',
   
-  // 모던한 컬러 팔레트 (다크 모드 대응)
+  // 미니멀 컬러 팔레트 (흰색 + 보라색 조합)
   colors: {
-    // 기본 브랜드 컬러 (그라데이션 기반)
-    primary: '#6366F1',        // 인디고 (Indigo-500)
-    primaryDark: '#4F46E5',    // 인디고 (Indigo-600)
-    primaryLight: '#818CF8',   // 인디고 (Indigo-400)
+    // 기본 색상
+    white: '#FFFFFF',
+    purple: '#8B5CF6',        // 메인 보라색 (Violet-500)
+    purpleLight: '#A78BFA',   // 라이트 보라색 (Violet-400)
+    purpleDark: '#7C3AED',    // 다크 보라색 (Violet-600)
+    purpleUltraLight: '#F3F4F6', // 매우 연한 보라색 배경
     
-    // 세컨더리 컬러
-    secondary: '#EC4899',      // 핑크 (Pink-500)
-    secondaryDark: '#DB2777',  // 핑크 (Pink-600)
-    secondaryLight: '#F472B6', // 핑크 (Pink-400)
+    // 시스템 색상
+    background: '#FFFFFF',     // 순백색 배경
+    surface: '#FFFFFF',        // 카드 배경
+    surfaceGray: '#F9FAFB',    // 연한 회색 (Gray-50)
     
-    // 액센트 컬러
-    accent: '#F59E0B',         // 앰버 (Amber-500)
-    accentDark: '#D97706',     // 앰버 (Amber-600)
-    accentLight: '#FBBF24',    // 앰버 (Amber-400)
+    // 텍스트 색상
+    text: '#111827',           // 진한 텍스트 (Gray-900)
+    textLight: '#6B7280',      // 밝은 텍스트 (Gray-500)
+    textMuted: '#9CA3AF',      // 음소거된 텍스트 (Gray-400)
+    textInverse: '#FFFFFF',    // 역전 텍스트 (흰색)
     
-    // 배경 및 서페이스
-    background: '#FAFAFA',     // 그레이 (Gray-50)
-    backgroundDark: '#111827', // 그레이 (Gray-900)
-    surface: '#FFFFFF',        // 순백
-    surfaceDark: '#1F2937',    // 그레이 (Gray-800)
+    // 보더 및 구분선
+    border: '#E5E7EB',         // 기본 테두리 (Gray-200)
+    borderLight: '#F3F4F6',    // 연한 테두리 (Gray-100)
     
-    // 글래스모피즘 배경
-    glass: 'rgba(255, 255, 255, 0.25)',
-    glassDark: 'rgba(31, 41, 55, 0.25)',
+    // 상태 색상
+    success: '#10B981',        // 성공 (Emerald-500)
+    warning: '#F59E0B',        // 경고 (Amber-500)
+    error: '#EF4444',          // 오류 (Red-500)
+    info: '#3B82F6',           // 정보 (Blue-500)
     
-    // 텍스트 컬러
-    text: '#111827',           // 그레이 (Gray-900)
-    textLight: '#6B7280',      // 그레이 (Gray-500)
-    textMuted: '#9CA3AF',      // 그레이 (Gray-400)
-    textInverse: '#F9FAFB',    // 그레이 (Gray-50)
-    
-    // 상태 컬러
-    success: '#10B981',        // 에메랄드 (Emerald-500)
-    warning: '#F59E0B',        // 앰버 (Amber-500)
-    error: '#EF4444',          // 레드 (Red-500)
-    info: '#3B82F6',           // 블루 (Blue-500)
-    
-    // 경계선 및 구분선
-    border: '#E5E7EB',         // 그레이 (Gray-200)
-    borderLight: '#F3F4F6',    // 그레이 (Gray-100)
-    
-    // 그라데이션 색상
+    // 그라데이션 (보라색 계열만)
     gradients: {
-      primary: ['#6366F1', '#EC4899'],
-      warm: ['#F59E0B', '#EF4444'],
-      cool: ['#3B82F6', '#6366F1'],
-      nature: ['#10B981', '#059669'],
+      primary: ['#8B5CF6', '#A78BFA'],      // 메인 보라색 그라데이션
+      light: ['#C4B5FD', '#DDD6FE'],        // 연한 보라색
+      dark: ['#7C3AED', '#6D28D9'],         // 진한 보라색
+      subtle: ['#F9FAFB', '#F3F4F6'],       // 미묘한 회색
     }
   },
   
-  // 모던 타이포그래피
+  // 미니멀 타이포그래피
   fonts: {
-    // 시스템 폰트 스택
     regular: 'System',
     medium: 'System',
     bold: 'System',
     
-    // 폰트 크기 (스케일 기반)
     sizes: {
       xs: 12,
       sm: 14,
@@ -74,30 +59,19 @@ export const APP_CONFIG = {
       '3xl': 30,
       '4xl': 36,
       '5xl': 48,
-      '6xl': 60,
     },
     
-    // 라인 높이
-    lineHeights: {
-      tight: 1.25,
-      normal: 1.5,
-      relaxed: 1.75,
-    },
-    
-    // 폰트 두께
     weights: {
       light: '300',
       normal: '400',
       medium: '500',
       semibold: '600',
       bold: '700',
-      extrabold: '800',
     }
   },
   
-  // 스페이싱 시스템 (8px 기반)
+  // 미니멀 스페이싱 (4px 기반)
   spacing: {
-    '0': 0,
     '1': 4,
     '2': 8,
     '3': 12,
@@ -109,23 +83,20 @@ export const APP_CONFIG = {
     '12': 48,
     '16': 64,
     '20': 80,
-    '24': 96,
   },
   
-  // 모던 보더 반지름
+  // 미니멀 보더 반지름
   borderRadius: {
     none: 0,
     sm: 4,
     base: 8,
-    md: 12,
-    lg: 16,
-    xl: 20,
-    '2xl': 24,
-    '3xl': 32,
+    lg: 12,
+    xl: 16,
+    '2xl': 20,
     full: 9999,
   },
   
-  // 향상된 그림자 시스템
+  // 미니멀 그림자
   shadows: {
     none: {
       shadowColor: 'transparent',
@@ -135,130 +106,83 @@ export const APP_CONFIG = {
       elevation: 0,
     },
     sm: {
-      shadowColor: '#000',
+      shadowColor: '#8B5CF6',
       shadowOffset: { width: 0, height: 1 },
       shadowOpacity: 0.05,
       shadowRadius: 2,
-      elevation: 2,
+      elevation: 1,
     },
     base: {
-      shadowColor: '#000',
+      shadowColor: '#8B5CF6',
       shadowOffset: { width: 0, height: 2 },
       shadowOpacity: 0.1,
       shadowRadius: 4,
-      elevation: 4,
+      elevation: 2,
     },
-    md: {
-      shadowColor: '#000',
+    lg: {
+      shadowColor: '#8B5CF6',
       shadowOffset: { width: 0, height: 4 },
       shadowOpacity: 0.15,
       shadowRadius: 8,
-      elevation: 8,
-    },
-    lg: {
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 8 },
-      shadowOpacity: 0.15,
-      shadowRadius: 16,
-      elevation: 16,
-    },
-    xl: {
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 12 },
-      shadowOpacity: 0.2,
-      shadowRadius: 24,
-      elevation: 24,
-    },
-    // 글로우 효과
-    glow: {
-      shadowColor: '#6366F1',
-      shadowOffset: { width: 0, height: 0 },
-      shadowOpacity: 0.3,
-      shadowRadius: 10,
-      elevation: 10,
+      elevation: 3,
     },
   },
-  
-  // 애니메이션 듀레이션
-  animation: {
-    fast: 150,
-    normal: 300,
-    slow: 500,
-    slower: 700,
-  },
-  
-  // 레이아웃 브레이크포인트
-  breakpoints: {
-    sm: 320,
-    md: 768,
-    lg: 1024,
-    xl: 1280,
-  }
 }
 
-// 감정 관련 설정 - 모던 디자인
+// 감정 관련 설정 - 보라색 계열로 통일
 export const EMOTION_CONFIG = {
-  // 기본 감정 카테고리 (더 세련된 컬러)
   categories: [
     { 
       id: 'joy', 
       name: '기쁨', 
-      color: '#10B981', 
-      lightColor: '#D1FAE5',
+      color: '#8B5CF6',     // 보라색
+      lightColor: '#F3F4F6',
       emoji: '😊',
-      gradient: ['#10B981', '#059669']
     },
     { 
       id: 'sadness', 
       name: '슬픔', 
-      color: '#3B82F6', 
-      lightColor: '#DBEAFE',
+      color: '#6B7280',     // 회색
+      lightColor: '#F9FAFB',
       emoji: '😢',
-      gradient: ['#3B82F6', '#2563EB']
     },
     { 
       id: 'anger', 
       name: '분노', 
-      color: '#EF4444', 
-      lightColor: '#FEE2E2',
+      color: '#EF4444',     // 빨간색 (유지)
+      lightColor: '#FEF2F2',
       emoji: '😠',
-      gradient: ['#EF4444', '#DC2626']
     },
     { 
       id: 'fear', 
       name: '불안', 
-      color: '#F59E0B', 
-      lightColor: '#FEF3C7',
+      color: '#F59E0B',     // 주황색 (유지)
+      lightColor: '#FFFBEB',
       emoji: '😰',
-      gradient: ['#F59E0B', '#D97706']
     },
     { 
       id: 'surprise', 
       name: '놀람', 
-      color: '#8B5CF6', 
-      lightColor: '#EDE9FE',
+      color: '#A78BFA',     // 연한 보라색
+      lightColor: '#F5F3FF',
       emoji: '😮',
-      gradient: ['#8B5CF6', '#7C3AED']
     },
     { 
       id: 'disgust', 
       name: '혐오', 
-      color: '#06B6D4', 
-      lightColor: '#CFFAFE',
+      color: '#6B7280',     // 회색
+      lightColor: '#F9FAFB',
       emoji: '😤',
-      gradient: ['#06B6D4', '#0891B2']
     },
     { 
       id: 'neutral', 
       name: '평온', 
-      color: '#6B7280', 
-      lightColor: '#F3F4F6',
+      color: '#9CA3AF',     // 연한 회색
+      lightColor: '#F9FAFB',
       emoji: '😐',
-      gradient: ['#6B7280', '#4B5563']
     },
   ],
   
-  // 감정 강도 레벨 (모던한 시각화)
   intensityLevels: [
     { level: 1, label: '아주 약함', color: '#F3F4F6', opacity: 0.2 },
     { level: 2, label: '약함', color: '#E5E7EB', opacity: 0.4 },
@@ -281,22 +205,22 @@ export const API_CONFIG = {
   }
 }
 
-// UI 컴포넌트 스타일 프리셋
+// 미니멀 UI 프리셋
 export const UI_PRESETS = {
-  // 버튼 스타일들
+  // 미니멀 버튼 스타일
   buttons: {
     primary: {
-      backgroundColor: APP_CONFIG.colors.primary,
-      borderRadius: APP_CONFIG.borderRadius.xl,
+      backgroundColor: APP_CONFIG.colors.purple,
+      borderRadius: APP_CONFIG.borderRadius.lg,
       paddingVertical: APP_CONFIG.spacing['4'],
       paddingHorizontal: APP_CONFIG.spacing['6'],
-      ...APP_CONFIG.shadows.md,
+      ...APP_CONFIG.shadows.base,
     },
     secondary: {
       backgroundColor: 'transparent',
-      borderWidth: 2,
-      borderColor: APP_CONFIG.colors.primary,
-      borderRadius: APP_CONFIG.borderRadius.xl,
+      borderWidth: 1,
+      borderColor: APP_CONFIG.colors.border,
+      borderRadius: APP_CONFIG.borderRadius.lg,
       paddingVertical: APP_CONFIG.spacing['4'],
       paddingHorizontal: APP_CONFIG.spacing['6'],
     },
@@ -308,30 +232,28 @@ export const UI_PRESETS = {
     }
   },
   
-  // 카드 스타일들
+  // 미니멀 카드 스타일
   cards: {
     default: {
-      backgroundColor: APP_CONFIG.colors.surface,
-      borderRadius: APP_CONFIG.borderRadius['2xl'],
+      backgroundColor: APP_CONFIG.colors.white,
+      borderRadius: APP_CONFIG.borderRadius.xl,
       padding: APP_CONFIG.spacing['6'],
-      marginBottom: APP_CONFIG.spacing['4'],
-      ...APP_CONFIG.shadows.md,
-    },
-    glass: {
-      backgroundColor: APP_CONFIG.colors.glass,
-      borderRadius: APP_CONFIG.borderRadius['2xl'],
-      padding: APP_CONFIG.spacing['6'],
-      marginBottom: APP_CONFIG.spacing['4'],
       borderWidth: 1,
-      borderColor: 'rgba(255, 255, 255, 0.2)',
-      ...APP_CONFIG.shadows.lg,
+      borderColor: APP_CONFIG.colors.borderLight,
+      ...APP_CONFIG.shadows.sm,
     },
     elevated: {
-      backgroundColor: APP_CONFIG.colors.surface,
-      borderRadius: APP_CONFIG.borderRadius['3xl'],
-      padding: APP_CONFIG.spacing['8'],
-      marginBottom: APP_CONFIG.spacing['6'],
-      ...APP_CONFIG.shadows.xl,
+      backgroundColor: APP_CONFIG.colors.white,
+      borderRadius: APP_CONFIG.borderRadius.xl,
+      padding: APP_CONFIG.spacing['6'],
+      ...APP_CONFIG.shadows.lg,
+    },
+    surface: {
+      backgroundColor: APP_CONFIG.colors.surfaceGray,
+      borderRadius: APP_CONFIG.borderRadius.lg,
+      padding: APP_CONFIG.spacing['4'],
+      borderWidth: 1,
+      borderColor: APP_CONFIG.colors.borderLight,
     }
   }
 }

@@ -14,97 +14,13 @@ import {
   Dimensions,
   Vibration
 } from 'react-native';
-<<<<<<< Updated upstream
-import { useNavigation, useRoute } from '@react-navigation/native';
-import { database } from '../lib/supabase';
-import openAIService from '../services/openai';
-=======
+import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { openAIService } from '../services/openai';
+import { database, auth } from '../lib/supabase';
+import { APP_CONFIG, EMOTION_CONFIG } from '../config/app';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
->>>>>>> Stashed changes
-
-const APP_CONFIG = {
-  colors: {
-    background: '#FEFCF0',
-    primary: '#4A5568',
-    secondary: '#A78BFA',
-    textLight: '#718096',
-    text: '#2D3748',
-    border: '#E2E8F0',
-    textMuted: '#A0AEC0',
-    success: '#48BB78',
-    surface: '#FFFFFF',
-<<<<<<< Updated upstream
-    accent: '#F6E05E',
-  }
-};
-
-const MessageBubble = ({ message, isUser, timestamp, emotion, showCBTSuggestion, onCBTStart }) => (
-  <View style={[
-    styles.messageContainer,
-    isUser ? styles.userMessageContainer : styles.aiMessageContainer
-  ]}>
-    <View style={[
-      styles.messageBubble,
-      isUser ? styles.userMessage : styles.aiMessage
-    ]}>
-      <Text style={[
-        styles.messageText,
-        isUser ? styles.userMessageText : styles.aiMessageText
-      ]}>
-        {message}
-      </Text>
-      {timestamp && (
-        <Text style={[
-          styles.timestamp,
-          isUser ? styles.userTimestamp : styles.aiTimestamp
-        ]}>
-          {timestamp}
-        </Text>
-      )}
-      
-      {showCBTSuggestion && !isUser && (
-        <TouchableOpacity 
-          style={styles.cbtSuggestionButton}
-          onPress={onCBTStart}
-        >
-          <Text style={styles.cbtSuggestionText}>
-            🧠 CBT 가이드 시작하기
-          </Text>
-        </TouchableOpacity>
-      )}
-    </View>
-    
-    {emotion && isUser && (
-      <EmotionTag emotion={emotion.emotion} intensity={emotion.intensity} />
-    )}
-  </View>
-);
-
-const EmotionTag = ({ emotion, intensity }) => {
-  const getEmotionColor = (emotion) => {
-    const colors = {
-      joy: '#48BB78', sadness: '#4299E1', anger: '#F56565',
-      fear: '#ED8936', surprise: '#A78BFA', disgust: '#38B2AC',
-      neutral: '#718096',
-    };
-    return colors[emotion] || colors.neutral;
-  };
-
-  const getEmotionEmoji = (emotion) => {
-    const emojis = {
-      joy: '😊', sadness: '😢', anger: '😠', 
-      fear: '😰', surprise: '😮', disgust: '😤',
-      neutral: '😐',
-    };
-    return emojis[emotion] || emojis.neutral;
-  };
-=======
-    gradient: ['#667eea', '#764ba2'],
-  }
-};
 
 // 타이핑 애니메이션 컴포넌트
 const TypingIndicator = () => {
@@ -126,48 +42,13 @@ const TypingIndicator = () => {
     };
     animateTyping();
   }, []);
->>>>>>> Stashed changes
-
-  const getEmotionLabel = (emotion) => {
-    const labels = {
-      joy: '기쁨', sadness: '슬픔', anger: '분노',
-      fear: '불안', surprise: '놀람', disgust: '혐오',
-      neutral: '평온',
-    };
-    return labels[emotion] || labels.neutral;
-  };
 
   return (
-<<<<<<< Updated upstream
-    <View style={[
-      styles.emotionTag,
-      { backgroundColor: getEmotionColor(emotion) + '20' }
-    ]}>
-      <Text style={styles.emotionEmoji}>{getEmotionEmoji(emotion)}</Text>
-      <Text style={[styles.emotionText, { color: getEmotionColor(emotion) }]}>
-        {getEmotionLabel(emotion)}
-      </Text>
-      <View style={styles.intensityDots}>
-        {[1, 2, 3, 4, 5].map(level => (
-          <View
-            key={level}
-            style={[
-              styles.intensityDot,
-              {
-                backgroundColor: level <= intensity 
-                  ? getEmotionColor(emotion) 
-                  : APP_CONFIG.colors.border
-              }
-            ]}
-          />
-        ))}
-=======
     <View style={styles.typingContainer}>
       <View style={styles.typingBubble}>
         <Animated.View style={[styles.typingDot, { opacity: dotOpacity1 }]} />
         <Animated.View style={[styles.typingDot, { opacity: dotOpacity2 }]} />
         <Animated.View style={[styles.typingDot, { opacity: dotOpacity3 }]} />
->>>>>>> Stashed changes
       </View>
       <Text style={styles.typingText}>Innerpal이 마음을 읽고 있어요...</Text>
     </View>
@@ -200,9 +81,12 @@ const MessageBubble = ({ message, isUser, timestamp, emotion, fadeAnim }) => {
     >
       {/* AI 메시지에 아바타 추가 */}
       {!isUser && (
-        <View style={styles.aiAvatar}>
+        <LinearGradient
+          colors={APP_CONFIG.colors.gradients.cool}
+          style={styles.aiAvatar}
+        >
           <Text style={styles.aiAvatarText}>🤖</Text>
-        </View>
+        </LinearGradient>
       )}
       
       <View style={[
@@ -219,9 +103,29 @@ const MessageBubble = ({ message, isUser, timestamp, emotion, fadeAnim }) => {
         {/* 감정 정보 표시 (AI 메시지만) */}
         {!isUser && emotion && (
           <View style={styles.emotionInfo}>
-            <Text style={styles.emotionInfoText}>
-              감지된 감정: {getEmotionKorean(emotion.primary_emotion)} ({emotion.intensity}/5)
-            </Text>
+            <View style={styles.emotionInfoHeader}>
+              <Text style={styles.emotionInfoEmoji}>
+                {getEmotionEmoji(emotion.primary_emotion)}
+              </Text>
+              <Text style={[styles.emotionInfoText, { color: getEmotionColor(emotion.primary_emotion) }]}>
+                {getEmotionKorean(emotion.primary_emotion)} · 강도 {emotion.intensity}/5
+              </Text>
+            </View>
+            <View style={styles.intensityBar}>
+              {[1, 2, 3, 4, 5].map(level => (
+                <View
+                  key={level}
+                  style={[
+                    styles.intensitySegment,
+                    {
+                      backgroundColor: level <= emotion.intensity 
+                        ? getEmotionColor(emotion.primary_emotion)
+                        : APP_CONFIG.colors.border
+                    }
+                  ]}
+                />
+              ))}
+            </View>
           </View>
         )}
         
@@ -237,9 +141,12 @@ const MessageBubble = ({ message, isUser, timestamp, emotion, fadeAnim }) => {
       
       {/* 사용자 메시지에 아바타 추가 */}
       {isUser && (
-        <View style={styles.userAvatar}>
+        <LinearGradient
+          colors={APP_CONFIG.colors.gradients.primary}
+          style={styles.userAvatar}
+        >
           <Text style={styles.userAvatarText}>😊</Text>
-        </View>
+        </LinearGradient>
       )}
     </Animated.View>
   );
@@ -261,23 +168,27 @@ const EmotionMood = ({ emotion, intensity }) => {
 
   if (!emotion) return null;
 
+  const emotionConfig = EMOTION_CONFIG.categories.find(cat => 
+    cat.name === emotion || cat.id === emotion
+  ) || EMOTION_CONFIG.categories[6];
+
   return (
     <Animated.View style={[
       styles.emotionMoodContainer,
       { transform: [{ scale: pulseAnim }] }
     ]}>
-      <View style={[
-        styles.emotionMoodCircle,
-        { backgroundColor: getEmotionColor(emotion) + '20' }
-      ]}>
+      <LinearGradient
+        colors={[emotionConfig.color + '20', emotionConfig.color + '10']}
+        style={styles.emotionMoodCircle}
+      >
         <Text style={styles.emotionMoodEmoji}>
-          {getEmotionEmoji(emotion)}
+          {emotionConfig.emoji}
         </Text>
-      </View>
+      </LinearGradient>
       <View style={styles.emotionMoodInfo}>
         <Text style={styles.emotionMoodLabel}>현재 감정</Text>
-        <Text style={[styles.emotionMoodText, { color: getEmotionColor(emotion) }]}>
-          {getEmotionKorean(emotion)}
+        <Text style={[styles.emotionMoodText, { color: emotionConfig.color }]}>
+          {emotionConfig.name}
         </Text>
         <View style={styles.intensityBar}>
           {[1, 2, 3, 4, 5].map(level => (
@@ -287,7 +198,7 @@ const EmotionMood = ({ emotion, intensity }) => {
                 styles.intensitySegment,
                 {
                   backgroundColor: level <= intensity 
-                    ? getEmotionColor(emotion) 
+                    ? emotionConfig.color 
                     : APP_CONFIG.colors.border
                 }
               ]}
@@ -301,52 +212,33 @@ const EmotionMood = ({ emotion, intensity }) => {
 
 // 헬퍼 함수들
 const getEmotionColor = (emotion) => {
-  const colors = {
-    joy: '#48BB78', sadness: '#4299E1', anger: '#F56565',
-    fear: '#ED8936', surprise: '#A78BFA', disgust: '#38B2AC',
-    neutral: '#718096', 기쁨: '#48BB78', 슬픔: '#4299E1', 분노: '#F56565',
-    불안: '#ED8936', 놀람: '#A78BFA', 혐오: '#38B2AC', 평온: '#718096'
-  };
-  return colors[emotion] || colors.neutral;
+  const emotionConfig = EMOTION_CONFIG.categories.find(cat => 
+    cat.name === emotion || cat.id === emotion
+  );
+  return emotionConfig?.color || APP_CONFIG.colors.textMuted;
 };
 
 const getEmotionEmoji = (emotion) => {
-  const emojis = {
-    joy: '😊', sadness: '😢', anger: '😠', fear: '😰',
-    surprise: '😮', disgust: '😤', neutral: '😐',
-    기쁨: '😊', 슬픔: '😢', 분노: '😠', 불안: '😰',
-    놀람: '😮', 혐오: '😤', 평온: '😐'
-  };
-  return emojis[emotion] || emojis.neutral;
+  const emotionConfig = EMOTION_CONFIG.categories.find(cat => 
+    cat.name === emotion || cat.id === emotion
+  );
+  return emotionConfig?.emoji || '😐';
 };
 
 const getEmotionKorean = (emotion) => {
-  const korean = {
-    joy: '기쁨', sadness: '슬픔', anger: '분노', fear: '불안',
-    surprise: '놀람', disgust: '혐오', neutral: '평온'
-  };
-  return korean[emotion] || emotion;
+  const emotionConfig = EMOTION_CONFIG.categories.find(cat => 
+    cat.name === emotion || cat.id === emotion
+  );
+  return emotionConfig?.name || emotion;
 };
 
 const InnerTalkScreen = ({ navigation }) => {
-<<<<<<< Updated upstream
-  const route = useRoute();
-  const { initialEmotion } = route.params || {};
-  
-=======
   const insets = useSafeAreaInsets();
->>>>>>> Stashed changes
   const [inputText, setInputText] = useState('');
   const [messages, setMessages] = useState([
     {
       id: 1,
-<<<<<<< Updated upstream
-      message: initialEmotion 
-        ? `안녕하세요! 감정을 기록해주셨서 고마워요. ${initialEmotion.emotion_text}라고 하셨는데, 더 자세히 이야기해주실래요?`
-        : "안녕하세요! 저는 당신의 내면의 친구 Innerpal이에요. 오늘 마음은 어떠신가요? 무엇이든 편하게 이야기해주세요.",
-=======
       message: "안녕하세요! 저는 당신의 내면의 친구 Innerpal이에요. 🌟\n\n오늘 마음은 어떠신가요? 기쁜 일이든 힘든 일이든, 무엇이든 편하게 이야기해주세요. 함께 마음을 들여다보고 이해해봐요.",
->>>>>>> Stashed changes
       isUser: false,
       timestamp: new Date().toLocaleTimeString('ko-KR', { 
         hour: '2-digit', 
@@ -356,100 +248,90 @@ const InnerTalkScreen = ({ navigation }) => {
     }
   ]);
   const [isLoading, setIsLoading] = useState(false);
-<<<<<<< Updated upstream
-  const [currentEmotion, setCurrentEmotion] = useState(
-    initialEmotion ? {
-      emotion: initialEmotion.primary_emotion,
-      intensity: initialEmotion.intensity
-    } : null
-  );
-  const [conversationDepth, setConversationDepth] = useState(0);
-  const scrollViewRef = useRef();
-
-  const handleSendMessage = async (messageText = inputText.trim()) => {
-    if (!messageText) return;
-=======
   const [currentEmotion, setCurrentEmotion] = useState(null);
+  const [currentUser, setCurrentUser] = useState(null);
   const [fadeAnim] = useState(new Animated.Value(1));
   const scrollViewRef = useRef();
 
-  // 실제 OpenAI API 호출
+  // 사용자 정보 로드
+  useEffect(() => {
+    loadCurrentUser();
+  }, []);
+
+  const loadCurrentUser = async () => {
+    try {
+      const { user, error } = await auth.getCurrentUser();
+      if (error) {
+        // 익명 사용자로 설정
+        setCurrentUser({ id: 'anonymous', isAnonymous: true });
+      } else {
+        setCurrentUser(user);
+      }
+    } catch (error) {
+      console.error('사용자 정보 로드 오류:', error);
+      setCurrentUser({ id: 'anonymous', isAnonymous: true });
+    }
+  };
+
+  // 감정 데이터 저장
+  const saveEmotionData = async (emotionText, analysisResult) => {
+    if (!currentUser) return;
+
+    try {
+      const emotionData = {
+        user_id: currentUser.id,
+        emotion_text: emotionText,
+        primary_emotion: analysisResult.emotion_analysis.primary_emotion,
+        intensity: analysisResult.emotion_analysis.intensity,
+        emotion_tags: analysisResult.emotion_analysis.keywords || [],
+        gpt_response: analysisResult.empathy_response,
+        cbt_conversation: {
+          follow_up_questions: analysisResult.follow_up_questions,
+          care_level: analysisResult.care_level,
+          suggested_actions: analysisResult.suggested_actions
+        },
+        created_at: new Date().toISOString()
+      };
+
+      const { data, error } = await database.createEmotion(emotionData);
+      
+      if (error) {
+        console.error('감정 데이터 저장 오류:', error);
+        // 저장 실패해도 사용자 경험을 해치지 않음
+      } else {
+        console.log('감정 데이터 저장 성공:', data);
+      }
+    } catch (error) {
+      console.error('감정 저장 중 오류:', error);
+    }
+  };
+
+  // 실제 OpenAI API 호출 및 데이터 저장
   const handleSendMessage = async () => {
     if (!inputText.trim()) return;
->>>>>>> Stashed changes
 
+    const userMessageText = inputText.trim();
     const userMessage = {
       id: Date.now(),
-      message: messageText,
+      message: userMessageText,
       isUser: true,
       timestamp: new Date().toLocaleTimeString('ko-KR', { 
         hour: '2-digit', 
         minute: '2-digit' 
-      }),
-      emotion: currentEmotion
+      })
     };
 
+    // 사용자 메시지 추가
     setMessages(prev => [...prev, userMessage]);
     setInputText('');
     setIsLoading(true);
 
-<<<<<<< Updated upstream
-    try {
-      const conversationHistory = messages.slice(-4);
-      
-      console.log('OpenAI API 호출 중...');
-      const analysis = await openAIService.analyzeEmotion(messageText, {
-        conversationHistory: conversationHistory
-      });
-      
-      if (analysis.success) {
-        setCurrentEmotion({
-          emotion: analysis.analysis.emotion_analysis.primary_emotion,
-          intensity: analysis.analysis.emotion_analysis.intensity
-        });
-      }
-
-      setConversationDepth(prev => prev + 1);
-
-      const aiMessage = {
-        id: Date.now() + 1,
-        message: analysis.success ? 
-          analysis.analysis.empathy_response + 
-          (analysis.analysis.follow_up_question ? "\n\n" + analysis.analysis.follow_up_question : "") :
-          "죄송해요, 지금은 응답하기 어려워요. 다시 말해주실래요?",
-        isUser: false,
-        timestamp: new Date().toLocaleTimeString('ko-KR', { 
-          hour: '2-digit', 
-          minute: '2-digit' 
-        }),
-        showCBTSuggestion: analysis.success ? analysis.analysis.should_suggest_cbt : false
-      };
-
-      setMessages(prev => [...prev, aiMessage]);
-
-      try {
-        await database.createConversation({
-          messages: [userMessage, aiMessage],
-          emotion_context: currentEmotion,
-          analysis_result: analysis.success ? analysis.analysis : null
-        });
-      } catch (saveError) {
-        console.warn('대화 저장 실패:', saveError);
-      }
-
-    } catch (error) {
-      console.error('AI 응답 생성 오류:', error);
-      
-      const fallbackMessage = {
-        id: Date.now() + 1,
-        message: "지금은 응답하기 어려워요. 하지만 당신의 마음을 이해하려고 노력하고 있어요.",
-=======
     // 햅틱 피드백
     Vibration.vibrate(50);
 
     try {
       // 실제 OpenAI API 호출
-      const result = await openAIService.analyzeEmotion(inputText.trim());
+      const result = await openAIService.analyzeEmotion(userMessageText);
       
       if (result.success) {
         // 감정 정보 업데이트
@@ -459,6 +341,9 @@ const InnerTalkScreen = ({ navigation }) => {
         };
         
         setCurrentEmotion(emotionData);
+
+        // 감정 데이터를 Supabase에 저장
+        await saveEmotionData(userMessageText, result.analysis);
 
         // AI 응답 메시지 추가
         const aiMessage = {
@@ -476,6 +361,17 @@ const InnerTalkScreen = ({ navigation }) => {
         setTimeout(() => {
           setMessages(prev => [...prev, aiMessage]);
           setIsLoading(false);
+          
+          // 성공 알림 (선택적)
+          if (!currentUser?.isAnonymous) {
+            setTimeout(() => {
+              Alert.alert(
+                '💾 기록 완료', 
+                '감정이 안전하게 저장되었어요!',
+                [{ text: '확인', style: 'default' }]
+              );
+            }, 1000);
+          }
         }, 1500); // 타이핑 효과를 위한 딜레이
 
       } else {
@@ -490,7 +386,6 @@ const InnerTalkScreen = ({ navigation }) => {
       const errorMessage = {
         id: Date.now() + 1,
         message: "죄송해요, 지금 제가 조금 바빠서 응답이 늦어지고 있어요. 😅 잠시 후에 다시 이야기해주실 수 있을까요?",
->>>>>>> Stashed changes
         isUser: false,
         timestamp: new Date().toLocaleTimeString('ko-KR', { 
           hour: '2-digit', 
@@ -498,25 +393,17 @@ const InnerTalkScreen = ({ navigation }) => {
         })
       };
       
-<<<<<<< Updated upstream
-      setMessages(prev => [...prev, fallbackMessage]);
-    } finally {
-      setIsLoading(false);
-=======
       setMessages(prev => [...prev, errorMessage]);
->>>>>>> Stashed changes
+      
+      Alert.alert(
+        '연결 오류',
+        'AI 서버 연결에 문제가 있어요. 네트워크를 확인하고 다시 시도해주세요.',
+        [{ text: '확인' }]
+      );
     }
   };
 
-  const handleCBTStart = () => {
-    const emotionData = {
-      emotion_text: messages.filter(m => m.isUser).map(m => m.message).join(' '),
-      primary_emotion: currentEmotion?.emotion,
-      intensity: currentEmotion?.intensity
-    };
-    navigation.navigate('CBTSession', { emotionData });
-  };
-
+  // 스크롤을 아래로 이동
   useEffect(() => {
     setTimeout(() => {
       if (scrollViewRef.current) {
@@ -532,27 +419,26 @@ const InnerTalkScreen = ({ navigation }) => {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
       >
-<<<<<<< Updated upstream
-        <View style={styles.header}>
-          <Text style={styles.headerTitle}>Inner Talk 💭</Text>
-          <Text style={styles.headerSubtitle}>AI와 함께하는 감정 대화</Text>
-          
-          {currentEmotion && (
-            <View style={styles.emotionDisplay}>
-              <Text style={styles.emotionLabel}>현재 감정:</Text>
-              <EmotionTag 
-                emotion={currentEmotion.emotion} 
-=======
         {/* 향상된 헤더 */}
+        <LinearGradient
+          colors={['rgba(99, 102, 241, 0.1)', 'transparent']}
+          style={styles.headerGradient}
+        />
+        
         <View style={[styles.header, { paddingTop: insets.top + 10 }]}>
           <View style={styles.headerContent}>
             <View style={styles.headerLeft}>
-              <View style={styles.logoContainer}>
+              <LinearGradient
+                colors={APP_CONFIG.colors.gradients.primary}
+                style={styles.logoContainer}
+              >
                 <Text style={styles.logoEmoji}>💭</Text>
-              </View>
+              </LinearGradient>
               <View>
                 <Text style={styles.headerTitle}>Inner Talk</Text>
-                <Text style={styles.headerSubtitle}>AI 감정 동반자</Text>
+                <Text style={styles.headerSubtitle}>
+                  AI 감정 동반자 {currentUser?.isAnonymous ? '(익명)' : ''}
+                </Text>
               </View>
             </View>
             
@@ -560,13 +446,13 @@ const InnerTalkScreen = ({ navigation }) => {
             {currentEmotion && (
               <EmotionMood 
                 emotion={currentEmotion.primary_emotion} 
->>>>>>> Stashed changes
                 intensity={currentEmotion.intensity} 
               />
             )}
           </View>
         </View>
 
+        {/* 메시지 리스트 */}
         <ScrollView
           ref={scrollViewRef}
           style={styles.messagesContainer}
@@ -580,42 +466,6 @@ const InnerTalkScreen = ({ navigation }) => {
               isUser={message.isUser}
               timestamp={message.timestamp}
               emotion={message.emotion}
-<<<<<<< Updated upstream
-              showCBTSuggestion={message.showCBTSuggestion}
-              onCBTStart={handleCBTStart}
-            />
-          ))}
-          
-          {isLoading && (
-            <View style={styles.loadingContainer}>
-              <ActivityIndicator size="small" color={APP_CONFIG.colors.primary} />
-              <Text style={styles.loadingText}>AI가 생각 중...</Text>
-            </View>
-          )}
-        </ScrollView>
-
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.textInput}
-            value={inputText}
-            onChangeText={setInputText}
-            placeholder="감정이나 생각을 자유롭게 이야기해주세요..."
-            placeholderTextColor={APP_CONFIG.colors.textMuted}
-            multiline={true}
-            maxLength={500}
-            editable={!isLoading}
-          />
-          <TouchableOpacity
-            style={[
-              styles.sendButton,
-              (!inputText.trim() || isLoading) && styles.sendButtonDisabled
-            ]}
-            onPress={() => handleSendMessage()}
-            disabled={!inputText.trim() || isLoading}
-          >
-            <Text style={styles.sendButtonText}>전송</Text>
-          </TouchableOpacity>
-=======
               fadeAnim={fadeAnim}
             />
           ))}
@@ -624,6 +474,10 @@ const InnerTalkScreen = ({ navigation }) => {
         </ScrollView>
 
         {/* 향상된 입력 영역 */}
+        <LinearGradient
+          colors={['transparent', 'rgba(255, 255, 255, 0.9)']}
+          style={styles.inputGradient}
+        />
         <View style={styles.inputContainer}>
           <View style={styles.inputWrapper}>
             <TextInput
@@ -645,15 +499,30 @@ const InnerTalkScreen = ({ navigation }) => {
               onPress={handleSendMessage}
               disabled={!inputText.trim() || isLoading}
             >
-              <Text style={styles.sendButtonText}>
-                {isLoading ? '💭' : '🚀'}
-              </Text>
+              <LinearGradient
+                colors={
+                  !inputText.trim() || isLoading 
+                    ? [APP_CONFIG.colors.border, APP_CONFIG.colors.textMuted]
+                    : APP_CONFIG.colors.gradients.primary
+                }
+                style={styles.sendButtonGradient}
+              >
+                <Text style={styles.sendButtonText}>
+                  {isLoading ? '💭' : '🚀'}
+                </Text>
+              </LinearGradient>
             </TouchableOpacity>
           </View>
-          <Text style={styles.inputHint}>
-            {inputText.length}/500 • 솔직한 감정을 표현해보세요
-          </Text>
->>>>>>> Stashed changes
+          <View style={styles.inputFooter}>
+            <Text style={styles.inputHint}>
+              {inputText.length}/500 • 솔직한 감정을 표현해보세요
+            </Text>
+            {currentUser?.isAnonymous && (
+              <Text style={styles.anonymousHint}>
+                🔒 익명으로 안전하게 보호됩니다
+              </Text>
+            )}
+          </View>
         </View>
       </KeyboardAvoidingView>
     </View>
@@ -661,39 +530,29 @@ const InnerTalkScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-<<<<<<< Updated upstream
-  container: { flex: 1, backgroundColor: APP_CONFIG.colors.background },
-  header: {
-    backgroundColor: APP_CONFIG.colors.surface,
-    paddingHorizontal: 20, paddingVertical: 16,
-    borderBottomWidth: 1, borderBottomColor: APP_CONFIG.colors.border,
-  },
-  headerTitle: {
-    fontSize: 24, fontWeight: 'bold', color: APP_CONFIG.colors.text, textAlign: 'center',
-  },
-  headerSubtitle: {
-    fontSize: 14, color: APP_CONFIG.colors.textLight, textAlign: 'center', marginTop: 4,
-  },
-  emotionDisplay: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginTop: 12,
-=======
   container: {
     flex: 1,
     backgroundColor: APP_CONFIG.colors.background,
   },
   
+  // 헤더 그라데이션
+  headerGradient: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 150,
+    zIndex: -1,
+  },
+  
   // 향상된 헤더 스타일
   header: {
-    backgroundColor: APP_CONFIG.colors.surface,
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
     paddingHorizontal: 20,
     paddingBottom: 16,
     borderBottomWidth: 1,
-    borderBottomColor: APP_CONFIG.colors.border,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    borderBottomColor: 'rgba(255, 255, 255, 0.3)',
+    ...APP_CONFIG.shadows.md,
   },
   headerContent: {
     flexDirection: 'row',
@@ -707,22 +566,22 @@ const styles = StyleSheet.create({
   logoContainer: {
     width: 50,
     height: 50,
-    backgroundColor: APP_CONFIG.colors.primary + '20',
     borderRadius: 25,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 12,
+    ...APP_CONFIG.shadows.md,
   },
   logoEmoji: {
     fontSize: 24,
   },
   headerTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
+    fontSize: APP_CONFIG.fonts.sizes.xl,
+    fontWeight: APP_CONFIG.fonts.weights.bold,
     color: APP_CONFIG.colors.text,
   },
   headerSubtitle: {
-    fontSize: 14,
+    fontSize: APP_CONFIG.fonts.sizes.sm,
     color: APP_CONFIG.colors.textLight,
     marginTop: 2,
   },
@@ -731,10 +590,11 @@ const styles = StyleSheet.create({
   emotionMoodContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: APP_CONFIG.colors.background,
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
     paddingHorizontal: 12,
     paddingVertical: 8,
-    borderRadius: 20,
+    borderRadius: APP_CONFIG.borderRadius.xl,
+    ...APP_CONFIG.shadows.sm,
   },
   emotionMoodCircle: {
     width: 40,
@@ -751,13 +611,13 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
   },
   emotionMoodLabel: {
-    fontSize: 10,
+    fontSize: APP_CONFIG.fonts.sizes.xs,
     color: APP_CONFIG.colors.textMuted,
     marginBottom: 2,
   },
   emotionMoodText: {
-    fontSize: 12,
-    fontWeight: '600',
+    fontSize: APP_CONFIG.fonts.sizes.sm,
+    fontWeight: APP_CONFIG.fonts.weights.semibold,
     marginBottom: 4,
   },
   intensityBar: {
@@ -795,11 +655,11 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: APP_CONFIG.colors.secondary + '20',
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 8,
     marginBottom: 4,
+    ...APP_CONFIG.shadows.sm,
   },
   aiAvatarText: {
     fontSize: 16,
@@ -808,11 +668,11 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: APP_CONFIG.colors.primary + '20',
     alignItems: 'center',
     justifyContent: 'center',
     marginLeft: 8,
     marginBottom: 4,
+    ...APP_CONFIG.shadows.sm,
   },
   userAvatarText: {
     fontSize: 16,
@@ -823,66 +683,25 @@ const styles = StyleSheet.create({
     maxWidth: screenWidth * 0.75,
     paddingHorizontal: 16,
     paddingVertical: 12,
-    borderRadius: 20,
+    borderRadius: APP_CONFIG.borderRadius.xl,
+    ...APP_CONFIG.shadows.sm,
   },
   userMessage: {
     backgroundColor: APP_CONFIG.colors.primary,
     borderBottomRightRadius: 6,
->>>>>>> Stashed changes
   },
-  emotionLabel: { fontSize: 14, color: APP_CONFIG.colors.text, marginRight: 8 },
-  messagesContainer: { flex: 1, paddingHorizontal: 16 },
-  messagesContent: { paddingVertical: 16 },
-  messageContainer: { marginVertical: 4 },
-  userMessageContainer: { alignItems: 'flex-end' },
-  aiMessageContainer: { alignItems: 'flex-start' },
-  messageBubble: { maxWidth: '80%', paddingHorizontal: 16, paddingVertical: 12, borderRadius: 20 },
-  userMessage: { backgroundColor: APP_CONFIG.colors.primary, borderBottomRightRadius: 6 },
   aiMessage: {
-    backgroundColor: APP_CONFIG.colors.surface, borderBottomLeftRadius: 6,
-    borderWidth: 1, borderColor: APP_CONFIG.colors.border,
+    backgroundColor: APP_CONFIG.colors.surface,
+    borderBottomLeftRadius: 6,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
   },
-<<<<<<< Updated upstream
-  messageText: { fontSize: 16, lineHeight: 20 },
-  userMessageText: { color: 'white' },
-  aiMessageText: { color: APP_CONFIG.colors.text },
-  timestamp: { fontSize: 12, marginTop: 4 },
-  userTimestamp: { color: 'rgba(255, 255, 255, 0.7)' },
-  aiTimestamp: { color: APP_CONFIG.colors.textMuted },
-  cbtSuggestionButton: {
-    backgroundColor: APP_CONFIG.colors.secondary, paddingHorizontal: 12, paddingVertical: 8,
-    borderRadius: 16, marginTop: 8, alignSelf: 'flex-start',
-  },
-  cbtSuggestionText: { color: 'white', fontSize: 14, fontWeight: '500' },
-  loadingContainer: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: 16,
-  },
-  loadingText: { marginLeft: 8, fontSize: 14, color: APP_CONFIG.colors.textLight, fontStyle: 'italic' },
-  emotionTag: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20 },
-  emotionEmoji: { fontSize: 16, marginRight: 6 },
-  emotionText: { fontSize: 14, fontWeight: '500', marginRight: 8 },
-  intensityDots: { flexDirection: 'row' },
-  intensityDot: { width: 4, height: 4, borderRadius: 2, marginHorizontal: 1 },
-  inputContainer: {
-    flexDirection: 'row', paddingHorizontal: 16, paddingVertical: 12,
-    backgroundColor: APP_CONFIG.colors.surface, borderTopWidth: 1, borderTopColor: APP_CONFIG.colors.border,
-    alignItems: 'flex-end', paddingBottom: Platform.OS === 'ios' ? 34 : 12,
-  },
-  textInput: {
-    flex: 1, borderWidth: 1, borderColor: APP_CONFIG.colors.border, borderRadius: 20,
-    paddingHorizontal: 16, paddingVertical: 12, marginRight: 12, fontSize: 16,
-    color: APP_CONFIG.colors.text, backgroundColor: APP_CONFIG.colors.background, maxHeight: 100,
-  },
-  sendButton: {
-    backgroundColor: APP_CONFIG.colors.primary, paddingHorizontal: 20, paddingVertical: 12,
-    borderRadius: 20, alignItems: 'center', justifyContent: 'center',
-=======
   messageText: {
-    fontSize: 16,
+    fontSize: APP_CONFIG.fonts.sizes.base,
     lineHeight: 22,
   },
   userMessageText: {
-    color: 'white',
+    color: APP_CONFIG.colors.textInverse,
   },
   aiMessageText: {
     color: APP_CONFIG.colors.text,
@@ -893,16 +712,24 @@ const styles = StyleSheet.create({
     marginTop: 8,
     paddingTop: 8,
     borderTopWidth: 1,
-    borderTopColor: APP_CONFIG.colors.border + '50',
+    borderTopColor: 'rgba(255, 255, 255, 0.2)',
+  },
+  emotionInfoHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 4,
+  },
+  emotionInfoEmoji: {
+    fontSize: 14,
+    marginRight: 6,
   },
   emotionInfoText: {
-    fontSize: 12,
-    color: APP_CONFIG.colors.textLight,
-    fontStyle: 'italic',
+    fontSize: APP_CONFIG.fonts.sizes.xs,
+    fontWeight: APP_CONFIG.fonts.weights.medium,
   },
   
   timestamp: {
-    fontSize: 11,
+    fontSize: APP_CONFIG.fonts.sizes.xs,
     marginTop: 4,
   },
   userTimestamp: {
@@ -923,10 +750,11 @@ const styles = StyleSheet.create({
     backgroundColor: APP_CONFIG.colors.surface,
     paddingHorizontal: 16,
     paddingVertical: 12,
-    borderRadius: 20,
+    borderRadius: APP_CONFIG.borderRadius.xl,
     borderWidth: 1,
-    borderColor: APP_CONFIG.colors.border,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
     marginBottom: 8,
+    ...APP_CONFIG.shadows.sm,
   },
   typingDot: {
     width: 8,
@@ -936,19 +764,29 @@ const styles = StyleSheet.create({
     marginHorizontal: 2,
   },
   typingText: {
-    fontSize: 14,
+    fontSize: APP_CONFIG.fonts.sizes.sm,
     color: APP_CONFIG.colors.textLight,
     fontStyle: 'italic',
   },
   
+  // 입력 영역 그라데이션
+  inputGradient: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 20,
+  },
+  
   // 향상된 입력 영역
   inputContainer: {
-    backgroundColor: APP_CONFIG.colors.surface,
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
     borderTopWidth: 1,
-    borderTopColor: APP_CONFIG.colors.border,
+    borderTopColor: 'rgba(255, 255, 255, 0.3)',
     paddingHorizontal: 16,
     paddingTop: 12,
     paddingBottom: 12,
+    ...APP_CONFIG.shadows.lg,
   },
   inputWrapper: {
     flexDirection: 'row',
@@ -959,44 +797,50 @@ const styles = StyleSheet.create({
     flex: 1,
     borderWidth: 1,
     borderColor: APP_CONFIG.colors.border,
-    borderRadius: 25,
+    borderRadius: APP_CONFIG.borderRadius.xl,
     paddingHorizontal: 16,
     paddingVertical: 12,
     marginRight: 12,
-    fontSize: 16,
+    fontSize: APP_CONFIG.fonts.sizes.base,
     color: APP_CONFIG.colors.text,
     backgroundColor: APP_CONFIG.colors.background,
     maxHeight: 100,
+    ...APP_CONFIG.shadows.sm,
   },
   sendButton: {
     width: 44,
     height: 44,
-    backgroundColor: APP_CONFIG.colors.primary,
     borderRadius: 22,
+    overflow: 'hidden',
+    ...APP_CONFIG.shadows.md,
+  },
+  sendButtonGradient: {
+    width: 44,
+    height: 44,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: APP_CONFIG.colors.primary,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 4,
   },
   sendButtonDisabled: {
-    backgroundColor: APP_CONFIG.colors.border,
-    shadowOpacity: 0,
+    opacity: 0.6,
   },
   sendButtonText: {
     fontSize: 18,
   },
-  inputHint: {
-    fontSize: 12,
-    color: APP_CONFIG.colors.textMuted,
-    textAlign: 'center',
-    fontStyle: 'italic',
->>>>>>> Stashed changes
+  inputFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
-  sendButtonDisabled: { backgroundColor: APP_CONFIG.colors.border },
-  sendButtonText: { color: 'white', fontSize: 16, fontWeight: '600' },
+  inputHint: {
+    fontSize: APP_CONFIG.fonts.sizes.xs,
+    color: APP_CONFIG.colors.textMuted,
+    fontStyle: 'italic',
+  },
+  anonymousHint: {
+    fontSize: APP_CONFIG.fonts.sizes.xs,
+    color: APP_CONFIG.colors.success,
+    fontWeight: APP_CONFIG.fonts.weights.medium,
+  },
 });
 
 export default InnerTalkScreen;

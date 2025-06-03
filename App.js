@@ -12,7 +12,102 @@ import { APP_CONFIG } from './config/app';
 // 화면 컴포넌트들
 import HomeScreen from './screens/HomeScreen';
 import InnerTalkScreen from './screens/InnerTalkScreen';
+<<<<<<< Updated upstream
 import EmotionAnalysisScreen from './screens/EmotionAnalysisScreen';
+=======
+import InsightsScreen from './screens/InsightsScreen';
+import ApiTestScreen from './screens/ApiTestScreen';
+
+// SafeArea를 사용하는 화면 래퍼
+const SafeScreen = ({ children, gradient = false }) => {
+  const insets = useSafeAreaInsets();
+  
+  const content = (
+    <View style={[styles.screenContainer, { 
+      paddingBottom: insets.bottom,
+      paddingTop: 0,
+    }]}>
+      {children}
+    </View>
+  );
+
+  if (gradient) {
+    return (
+      <LinearGradient
+        colors={['rgba(99, 102, 241, 0.05)', 'transparent']}
+        style={styles.gradientContainer}
+      >
+        {content}
+      </LinearGradient>
+    );
+  }
+
+  return content;
+};
+
+// 개선된 프로필 화면
+const ProfileScreen = ({ navigation }) => (
+  <SafeScreen gradient>
+    <ScrollView style={styles.scrollView} contentContainerStyle={styles.centerContent}>
+      <View style={styles.modernHeader}>
+        <LinearGradient
+          colors={APP_CONFIG.colors.gradients.warm}
+          style={styles.iconGradient}
+        >
+          <Text style={styles.headerEmoji}>⚙️</Text>
+        </LinearGradient>
+        <Text style={styles.title}>프로필 설정</Text>
+        <Text style={styles.subtitle}>사용자 설정 및 계정 관리</Text>
+      </View>
+      
+      <View style={styles.featureList}>
+        <View style={styles.featureItem}>
+          <Text style={styles.featureEmoji}>🎨</Text>
+          <Text style={styles.featureText}>개인화 설정</Text>
+        </View>
+        <View style={styles.featureItem}>
+          <Text style={styles.featureEmoji}>🔔</Text>
+          <Text style={styles.featureText}>알림 및 보안 설정</Text>
+        </View>
+        <View style={styles.featureItem}>
+          <Text style={styles.featureEmoji}>📥</Text>
+          <Text style={styles.featureText}>데이터 내보내기</Text>
+        </View>
+        <View style={styles.featureItem}>
+          <Text style={styles.featureEmoji}>🌙</Text>
+          <Text style={styles.featureText}>다크 모드 지원</Text>
+        </View>
+      </View>
+      
+      <TouchableOpacity 
+        style={styles.modernButton}
+        onPress={() => alert('🛠️ 프로필 설정 기능을 개발 중입니다!\n개인화된 경험을 준비하고 있어요!')}
+      >
+        <LinearGradient
+          colors={APP_CONFIG.colors.gradients.warm}
+          style={styles.buttonGradient}
+        >
+          <Text style={styles.buttonText}>설정 열기</Text>
+          <Text style={styles.buttonEmoji}>✨</Text>
+        </LinearGradient>
+      </TouchableOpacity>
+
+      <TouchableOpacity 
+        style={[styles.modernButton, { marginTop: APP_CONFIG.spacing['3'] }]}
+        onPress={() => navigation.navigate('ApiTest')}
+      >
+        <LinearGradient
+          colors={['#6B7280', '#4B5563']}
+          style={styles.buttonGradient}
+        >
+          <Text style={styles.buttonText}>개발자 도구</Text>
+          <Text style={styles.buttonEmoji}>🔧</Text>
+        </LinearGradient>
+      </TouchableOpacity>
+    </ScrollView>
+  </SafeScreen>
+);
+>>>>>>> Stashed changes
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -105,8 +200,13 @@ function MainTabs() {
         tabBarActiveTintColor: '#7C3AED',
         tabBarInactiveTintColor: '#9CA3AF',
         tabBarLabelStyle: {
+<<<<<<< Updated upstream
           fontSize: 12,
           fontWeight: '500',
+=======
+          fontSize: APP_CONFIG.fonts.sizes.xs,
+          fontWeight: APP_CONFIG.fonts.weights.medium,
+>>>>>>> Stashed changes
           marginTop: 4,
         },
         headerShown: false,
@@ -209,12 +309,18 @@ export default function App() {
         <Stack.Navigator screenOptions={{ headerShown: false }}>
           <Stack.Screen name="MainTabs" component={MainTabs} />
           <Stack.Screen 
+<<<<<<< Updated upstream
             name="EmotionAnalysis" 
             component={EmotionAnalysisScreen}
+=======
+            name="ApiTest" 
+            component={ApiTestScreen}
+>>>>>>> Stashed changes
             options={{
               headerShown: true,
               title: '감정 분석',
               headerStyle: {
+<<<<<<< Updated upstream
                 backgroundColor: '#FEFCF0',
                 shadowColor: '#000',
                 shadowOffset: { width: 0, height: 1 },
@@ -228,6 +334,17 @@ export default function App() {
                 fontSize: 18,
               },
               headerTintColor: '#7C3AED',
+=======
+                backgroundColor: APP_CONFIG.colors.background,
+                ...APP_CONFIG.shadows.sm,
+              },
+              headerTitleStyle: {
+                color: APP_CONFIG.colors.text,
+                fontWeight: APP_CONFIG.fonts.weights.semibold,
+                fontSize: APP_CONFIG.fonts.sizes.lg,
+              },
+              headerTintColor: APP_CONFIG.colors.primary,
+>>>>>>> Stashed changes
             }}
           />
         </Stack.Navigator>
@@ -442,4 +559,8 @@ const styles = StyleSheet.create({
   tabEmojiActive: {
     fontSize: 24,
   },
+<<<<<<< Updated upstream
 });
+=======
+});
+>>>>>>> Stashed changes
