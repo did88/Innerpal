@@ -31,27 +31,16 @@ const EmotionAnalysisScreen = ({ navigation }) => {
     setLoading(true);
 
     setTimeout(async () => {
-      const emotions = await emotionAnalyzer.analyzeText(inputText);
-      if (!emotions) {
+      const result = await emotionAnalyzer.analyzeText(inputText);
+      if (!result) {
         setLoading(false);
         Alert.alert('오류', '감정 분석에 실패했습니다. 다시 시도해주세요.');
         return;
       }
 
-      emotionAnalyzer.saveEmotionData(emotions, inputText);
+      emotionAnalyzer.saveEmotionData(result.emotions, inputText);
 
-      const dominantEmotion = Object.keys(emotions).reduce((a, b) =>
-        emotions[a] > emotions[b] ? a : b
-      );
-
-      const recommendations = emotionAnalyzer.generateRecommendations(emotions);
-
-      setAnalysisResult({
-        emotions,
-        dominantEmotion,
-        recommendations,
-        emotionScore: emotionAnalyzer.calculateEmotionScore(emotions)
-      });
+      setAnalysisResult(result);
 
       setLoading(false);
 
