@@ -30,8 +30,14 @@ const EmotionAnalysisScreen = ({ navigation }) => {
 
     setLoading(true);
 
-    setTimeout(() => {
-      const emotions = emotionAnalyzer.analyzeText(inputText);
+    setTimeout(async () => {
+      const emotions = await emotionAnalyzer.analyzeText(inputText);
+      if (!emotions) {
+        setLoading(false);
+        Alert.alert('오류', '감정 분석에 실패했습니다. 다시 시도해주세요.');
+        return;
+      }
+
       emotionAnalyzer.saveEmotionData(emotions, inputText);
 
       const dominantEmotion = Object.keys(emotions).reduce((a, b) =>

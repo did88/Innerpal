@@ -30,7 +30,7 @@ export const getEmotionSummary = async (text) => {
         'Authorization': `Bearer ${OPENAI_API_KEY}`,
       },
       body: JSON.stringify({
-        model: 'gpt-3.5-turbo',
+        model: 'gpt-4',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: `다음 문장을 분석해주세요:
@@ -78,7 +78,7 @@ export const innerTalk = async (messages = []) => {
         'Authorization': `Bearer ${OPENAI_API_KEY}`,
       },
       body: JSON.stringify({
-        model: 'gpt-3.5-turbo',
+        model: 'gpt-4',
         messages: [
           { role: 'system', content: systemPrompt },
           ...messages,
@@ -112,7 +112,7 @@ export const generateCBTInsights = async (sessionData) => {
         'Authorization': `Bearer ${OPENAI_API_KEY}`,
       },
       body: JSON.stringify({
-        model: 'gpt-3.5-turbo',
+        model: 'gpt-4',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: JSON.stringify(sessionData) },
