@@ -170,6 +170,15 @@ eas build --profile development
 4. 브랜치에 Push (`git push origin feature/AmazingFeature`)
 5. Pull Request 생성
 
+## Development
+
+프로젝트 의존성은 `npm install` 명령으로 설치합니다. 단위 테스트는 **Jest**를 사용하며
+`__tests__/` 폴더에 위치합니다. 다음과 같이 실행할 수 있습니다.
+
+```bash
+npm test
+```
+
 ## 📄 라이선스
 
 MIT License - 자세한 내용은 [LICENSE](LICENSE) 파일을 참조하세요.
