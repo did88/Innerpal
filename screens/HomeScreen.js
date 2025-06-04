@@ -58,9 +58,9 @@ const HomeScreen = ({ navigation }) => {
               <Text style={styles.actionText}>대화하기</Text>
             </TouchableOpacity>
             
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.actionCard}
-              onPress={() => navigation.navigate('Insights')}
+              onPress={() => navigation.navigate('EmotionStats')}
               activeOpacity={0.7}
             >
               <Text style={styles.actionEmoji}>📊</Text>
