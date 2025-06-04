@@ -160,6 +160,11 @@ const recommendations = emotionAnalyzer.generateRecommendations(emotions);
 
 MIT License - 자세한 내용은 [LICENSE](LICENSE) 파일을 참조하세요.
 
+## 🌐 GitHub Pages
+
+문서를 `docs/` 폴더에 두고 GitHub Pages를 활성화하면 [https://did88.github.io/Innerpal/](https://did88.github.io/Innerpal/) 에서 정책 페이지를 확인할 수 있습니다.
+
+
 ## 📞 문의
 
 - **개발자**: [양원석](https://github.com/did88)
