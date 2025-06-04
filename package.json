@@ -50,5 +50,6 @@
     "jest": "^29.7.0",
     "jest-expo": "^53.0.5"
   },
-  "private": true
+  "private": true,
+  "license": "MIT"
 }
