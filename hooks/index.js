@@ -37,7 +37,7 @@ export const useAuth = () => {
       if (error) throw error;
       
       setSession(data.session);
-      setUser(data.session.user);
+      setUser(data.user ?? data.session?.user ?? null);
       return { success: true, error: null };
     } catch (error) {
       devUtils.log('Sign in error:', error);
