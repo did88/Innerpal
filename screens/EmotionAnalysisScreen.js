@@ -13,6 +13,7 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { emotionAnalyzer } from '../utils/emotionAnalyzer';
 import { EMOTION_CONFIG, QUICK_PROMPTS } from '../utils/emotionConstants';
+import { database } from '../lib/supabase';
 
 const { width } = Dimensions.get('window');
 
@@ -36,6 +37,17 @@ const EmotionAnalysisScreen = ({ navigation }) => {
         setLoading(false);
         Alert.alert('오류', '감정 분석에 실패했습니다. 다시 시도해주세요.');
         return;
+      }
+
+      try {
+        await database.createEmotion({
+          emotion_text: inputText,
+          primary_emotion: result.dominantEmotion,
+          intensity: result.emotionScore,
+          ai_analysis: result.emotions,
+        });
+      } catch (err) {
+        console.warn('Emotion save error:', err);
       }
 
       emotionAnalyzer.saveEmotionData(result.emotions, inputText);
