@@ -338,7 +338,7 @@ export const useForm = (initialValues = {}, validationRules = {}) => {
     }
   }, [validationRules, touched, values]);
 
-  const setTouched = useCallback((name) => {
+  const markTouched = useCallback((name) => {
     setTouched(prev => ({ ...prev, [name]: true }));
   }, []);
 
@@ -369,7 +369,7 @@ export const useForm = (initialValues = {}, validationRules = {}) => {
     errors,
     touched,
     setValue,
-    setTouched,
+    markTouched,
     validate,
     reset,
     isValid: Object.keys(errors).length === 0
