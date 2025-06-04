@@ -82,7 +82,12 @@ const ProfileScreen = () => {
     }
   }, [isAuthenticated]);
 
-  const onSubmit = async ({ email, password }) => {
+  const onSubmit = async ({ email, password, confirmPassword }) => {
+    if (mode === 'signup' && password !== confirmPassword) {
+      Alert.alert('오류', '비밀번호가 일치하지 않습니다');
+      return;
+    }
+
     const fn = mode === 'signup' ? signUp : signIn;
     const { success, error } = await fn(email, password);
     if (!success) {
@@ -158,6 +163,22 @@ const ProfileScreen = () => {
                   />
                 )}
               />
+              {mode === 'signup' && (
+                <Controller
+                  control={control}
+                  name="confirmPassword"
+                  defaultValue=""
+                  render={({ field: { onChange, value } }) => (
+                    <TextInput
+                      style={styles.textInput}
+                      placeholder="비밀번호 확인"
+                      secureTextEntry
+                      value={value}
+                      onChangeText={onChange}
+                    />
+                  )}
+                />
+              )}
               <TouchableOpacity style={styles.modernButton} onPress={handleSubmit(onSubmit)} disabled={loading}>
                 <LinearGradient colors={['#7C3AED', '#A855F7']} style={styles.buttonGradient}>
                   <Text style={styles.buttonText}>{mode === 'signup' ? '회원가입' : '로그인'}</Text>
