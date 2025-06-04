@@ -3,6 +3,8 @@ import { auth, database } from '../lib/supabase';
 import { devUtils } from '../utils';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+const CREDENTIALS_KEY = 'innerpal_credentials';
+
 /**
  * 인증 관련 훅
  */
@@ -12,13 +14,19 @@ export const useAuth = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // 초기 세션 확인
+    // 초기 세션 확인 및 자동 로그인
     const getInitialSession = async () => {
       try {
         const { session, error } = await auth.getSession();
         if (!error && session) {
           setSession(session);
           setUser(session.user);
+        } else {
+          const saved = await AsyncStorage.getItem(CREDENTIALS_KEY);
+          if (saved) {
+            const { email, password } = JSON.parse(saved);
+            await signIn(email, password);
+          }
         }
       } catch (error) {
         devUtils.log('Initial session error:', error);
@@ -35,7 +43,9 @@ export const useAuth = () => {
     try {
       const { data, error } = await auth.signIn(email, password);
       if (error) throw error;
-      
+
+      await AsyncStorage.setItem(CREDENTIALS_KEY, JSON.stringify({ email, password }));
+
       setSession(data.session);
       setUser(data.user ?? data.session?.user ?? null);
       return { success: true, error: null };
@@ -52,7 +62,9 @@ export const useAuth = () => {
     try {
       const { data, error } = await auth.signUp(email, password, metadata);
       if (error) throw error;
-      
+
+      await AsyncStorage.setItem(CREDENTIALS_KEY, JSON.stringify({ email, password }));
+
       return { success: true, error: null, data };
     } catch (error) {
       devUtils.log('Sign up error:', error);
@@ -67,7 +79,9 @@ export const useAuth = () => {
     try {
       const { error } = await auth.signOut();
       if (error) throw error;
-      
+
+      await AsyncStorage.removeItem(CREDENTIALS_KEY);
+
       setSession(null);
       setUser(null);
       return { success: true, error: null };
