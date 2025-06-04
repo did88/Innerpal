@@ -108,6 +108,20 @@ const recommendations = emotionAnalyzer.generateRecommendations(emotions);
 // 결과: ['이 좋은 기분을 친구와 나눠보세요', ...]
 ```
 
+## Push Notifications
+
+Expo Go \(SDK 53 기준\)에서는 원격 푸시 알림 기능이 더 이상 제공되지 않습니다. 원격 푸시 알림을 테스트하려면 개발용 빌드나 EAS 빌드를 사용해야 합니다.
+
+```bash
+# development build 예시
+npx expo run:android
+
+# 또는 EAS 빌드
+eas build --profile development
+```
+
+로컬 알림은 여전히 Expo Go에서 정상적으로 동작합니다.
+
 ## 📊 성능 지표
 
 - **분석 속도**: 평균 500ms 이하
