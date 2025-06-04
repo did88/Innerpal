@@ -3,13 +3,16 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, View, Text, ActivityIndicator, ScrollView, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, ActivityIndicator, ScrollView, TouchableOpacity, TextInput, Alert } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
 import { database } from './lib/supabase';
 import { requestPermissionsAsync } from './services/notifications';
 
 import { APP_CONFIG } from './config/app';
+import { useAuth } from './hooks';
+import { analytics } from './lib/supabase';
+import { useForm, Controller } from 'react-hook-form';
 
 import HomeScreen from './screens/HomeScreen';
 import InnerTalkScreen from './screens/InnerTalkScreen';
@@ -63,26 +66,110 @@ const InsightsScreen = ({ navigation }) => (
   </View>
 );
 
-const ProfileScreen = ({ navigation }) => (
-  <View style={styles.screenContainer}>
-    <ScrollView style={styles.scrollView} contentContainerStyle={styles.centerContent}>
-      <View style={styles.modernHeader}>
-        <LinearGradient
-          colors={['#F59E0B', '#EF4444']}
-          style={styles.iconGradient}
-        >
-          <Text style={styles.headerEmoji}>👤</Text>
-        </LinearGradient>
-        <Text style={styles.title}>내 프로필</Text>
-        <Text style={styles.subtitle}>개인 설정 및 데이터 관리</Text>
-      </View>
+const ProfileScreen = () => {
+  const { user, isAuthenticated, signIn, signUp, signOut, loading } = useAuth();
+  const { control, handleSubmit, reset } = useForm();
+  const [mode, setMode] = useState('signin');
+  const [insights, setInsights] = useState(null);
 
-      <View style={styles.profileContent}>
-        <Text style={styles.comingSoonText}>프로필 기능이 곧 업데이트됩니다 ✨</Text>
-      </View>
-    </ScrollView>
-  </View>
-);
+  useEffect(() => {
+    if (isAuthenticated) {
+      analytics.getEmotionPatterns().then(({ data }) => {
+        if (data) setInsights(data);
+      });
+    } else {
+      setInsights(null);
+    }
+  }, [isAuthenticated]);
+
+  const onSubmit = async ({ email, password }) => {
+    const fn = mode === 'signup' ? signUp : signIn;
+    const { success, error } = await fn(email, password);
+    if (!success) {
+      Alert.alert('오류', error || '문제가 발생했습니다');
+    } else {
+      reset();
+    }
+  };
+
+  return (
+    <View style={styles.screenContainer}>
+      <ScrollView style={styles.scrollView} contentContainerStyle={styles.centerContent}>
+        <View style={styles.modernHeader}>
+          <LinearGradient colors={['#F59E0B', '#EF4444']} style={styles.iconGradient}>
+            <Text style={styles.headerEmoji}>👤</Text>
+          </LinearGradient>
+          <Text style={styles.title}>내 프로필</Text>
+          <Text style={styles.subtitle}>개인 설정 및 데이터 관리</Text>
+        </View>
+
+        {isAuthenticated ? (
+          <View style={styles.profileContent}>
+            <Text style={styles.profileEmail}>{user.email}</Text>
+            {insights && (
+              <View style={styles.insightsBox}>
+                <Text style={styles.insightsHeader}>최근 감정 패턴</Text>
+                <Text style={styles.insightText}>총 기록: {insights.totalEntries}</Text>
+                <Text style={styles.insightText}>주요 감정: {insights.mostCommonEmotion}</Text>
+              </View>
+            )}
+            <TouchableOpacity style={styles.modernButton} onPress={signOut} disabled={loading}>
+              <LinearGradient colors={['#EF4444', '#F59E0B']} style={styles.buttonGradient}>
+                <Text style={styles.buttonText}>로그아웃</Text>
+              </LinearGradient>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <View style={styles.profileContent}>
+            <View style={styles.authToggle}>
+              <TouchableOpacity onPress={() => setMode('signin')} disabled={mode === 'signin'}>
+                <Text style={[styles.authToggleText, mode === 'signin' && styles.authToggleActive]}>로그인</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => setMode('signup')} disabled={mode === 'signup'}>
+                <Text style={[styles.authToggleText, mode === 'signup' && styles.authToggleActive]}>회원가입</Text>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.authForm}>
+              <Controller
+                control={control}
+                name="email"
+                defaultValue=""
+                render={({ field: { onChange, value } }) => (
+                  <TextInput
+                    style={styles.textInput}
+                    placeholder="이메일"
+                    autoCapitalize="none"
+                    value={value}
+                    onChangeText={onChange}
+                  />
+                )}
+              />
+              <Controller
+                control={control}
+                name="password"
+                defaultValue=""
+                render={({ field: { onChange, value } }) => (
+                  <TextInput
+                    style={styles.textInput}
+                    placeholder="비밀번호"
+                    secureTextEntry
+                    value={value}
+                    onChangeText={onChange}
+                  />
+                )}
+              />
+              <TouchableOpacity style={styles.modernButton} onPress={handleSubmit(onSubmit)} disabled={loading}>
+                <LinearGradient colors={['#7C3AED', '#A855F7']} style={styles.buttonGradient}>
+                  <Text style={styles.buttonText}>{mode === 'signup' ? '회원가입' : '로그인'}</Text>
+                </LinearGradient>
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
+      </ScrollView>
+    </View>
+  );
+};
 
 function MainTabs() {
   return (
@@ -263,9 +350,52 @@ const styles = StyleSheet.create({
     marginTop: 24,
     alignItems: 'center',
   },
-  comingSoonText: {
+  profileEmail: {
     fontSize: 16,
-    color: '#9CA3AF',
+    marginBottom: 12,
+    color: '#1F2937',
+  },
+  insightsBox: {
+    marginBottom: 20,
+    alignItems: 'center',
+  },
+  insightsHeader: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 4,
+    color: '#374151',
+  },
+  insightText: {
+    fontSize: 14,
+    color: '#4B5563',
+  },
+  authToggle: {
+    flexDirection: 'row',
+    marginBottom: 12,
+    gap: 12,
+  },
+  authToggleText: {
+    fontSize: 16,
+    color: '#6B7280',
+  },
+  authToggleActive: {
+    color: '#7C3AED',
+    fontWeight: '600',
+  },
+  authForm: {
+    width: '100%',
+    maxWidth: 320,
+    gap: 12,
+  },
+  textInput: {
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    fontSize: 14,
+    color: '#1F2937',
   },
   tabIcon: {
     position: 'relative',
