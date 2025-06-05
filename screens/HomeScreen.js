@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -8,10 +8,52 @@ import {
   Dimensions
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useAuth, useEmotions } from '../hooks';
+import { EMOTION_CONFIG } from '../config/app';
 
 const { width } = Dimensions.get('window');
 
 const HomeScreen = ({ navigation }) => {
+  const { user } = useAuth();
+  const { emotions } = useEmotions(user?.id);
+  const [stats, setStats] = useState({ streak: 0, total: 0, recent: null });
+
+  useEffect(() => {
+    const calculateStats = (list) => {
+      const total = list.length;
+      if (total === 0) return { streak: 0, total: 0, recent: null };
+
+      const sorted = [...list].sort(
+        (a, b) => new Date(b.created_at) - new Date(a.created_at)
+      );
+      const recent = sorted[0].primary_emotion;
+
+      const uniqueDates = [
+        ...new Set(sorted.map((e) => e.created_at.split('T')[0])),
+      ];
+      let streak = 0;
+      let current = new Date();
+      for (const date of uniqueDates) {
+        const dateStr = current.toISOString().split('T')[0];
+        if (date === dateStr) {
+          streak += 1;
+          current.setDate(current.getDate() - 1);
+        } else {
+          break;
+        }
+      }
+
+      return { streak, total, recent };
+    };
+
+    setStats(calculateStats(emotions || []));
+  }, [emotions]);
+
+  const getEmoji = (emotionId) => {
+    const found = EMOTION_CONFIG.categories.find((c) => c.id === emotionId);
+    return found ? found.emoji : '😐';
+  };
+
   return (
     <View style={styles.container}>
       <ScrollView 
@@ -118,15 +160,15 @@ const HomeScreen = ({ navigation }) => {
           <Text style={styles.statsTitle}>나의 감정 여정</Text>
           <View style={styles.statsGrid}>
             <View style={styles.statItem}>
-              <Text style={styles.statNumber}>7</Text>
+              <Text style={styles.statNumber}>{stats.streak}</Text>
               <Text style={styles.statLabel}>연속 일수</Text>
             </View>
             <View style={styles.statItem}>
-              <Text style={styles.statNumber}>23</Text>
+              <Text style={styles.statNumber}>{stats.total}</Text>
               <Text style={styles.statLabel}>총 분석</Text>
             </View>
             <View style={styles.statItem}>
-              <Text style={styles.statNumber}>😊</Text>
+              <Text style={styles.statNumber}>{stats.recent ? getEmoji(stats.recent) : '-'}</Text>
               <Text style={styles.statLabel}>최근 기분</Text>
             </View>
           </View>
