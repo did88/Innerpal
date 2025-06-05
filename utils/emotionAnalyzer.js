@@ -117,12 +117,18 @@ export class EmotionAnalyzer {
 
   calculateTrend(values) {
     const n = values.length;
+    if (n <= 1) return 0;
+
     const x = Array.from({ length: n }, (_, i) => i);
     const sumX = x.reduce((a, b) => a + b, 0);
     const sumY = values.reduce((a, b) => a + b, 0);
     const sumXY = x.reduce((sum, xi, i) => sum + xi * values[i], 0);
     const sumXX = x.reduce((sum, xi) => sum + xi * xi, 0);
-    return (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
+
+    const denominator = n * sumXX - sumX * sumX;
+    if (denominator === 0) return 0;
+
+    return (n * sumXY - sumX * sumY) / denominator;
   }
 }
 
