@@ -10,9 +10,10 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { database } from './lib/supabase';
 import { requestPermissionsAsync } from './services/notifications';
 import { APP_CONFIG } from './config/app';
-import { useAuth } from './hooks';
+import { useAuth, useProfile } from './hooks';
 import { analytics } from './lib/supabase';
 import { useForm, Controller } from 'react-hook-form';
+import { RECOMMENDATIONS } from './utils/emotionConstants';
 
 import HomeScreen from './screens/HomeScreen';
 import InnerTalkScreen from './screens/InnerTalkScreen';
@@ -76,6 +77,7 @@ const InsightsScreen = ({ navigation }) => (
 
 const ProfileScreen = ({ navigation }) => {
   const { user, isAuthenticated, signIn, signUp, signOut, loading } = useAuth();
+  const { profile, updateProfile } = useProfile(user?.id);
   const { control, handleSubmit, reset } = useForm();
   const [mode, setMode] = useState('signin');
   const [insights, setInsights] = useState(null);
@@ -83,12 +85,15 @@ const ProfileScreen = ({ navigation }) => {
   useEffect(() => {
     if (isAuthenticated) {
       analytics.getEmotionPatterns().then(({ data }) => {
-        if (data) setInsights(data);
+        if (data) {
+          setInsights(data);
+          updateProfile({});
+        }
       });
     } else {
       setInsights(null);
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, updateProfile]);
 
   const onSubmit = async ({ email, password, confirmPassword, gender, birthYear }) => {
     if (mode === 'signup' && password !== confirmPassword) {
@@ -129,6 +134,12 @@ const ProfileScreen = ({ navigation }) => {
                 <Text style={styles.insightsHeader}>최근 감정 패턴</Text>
                 <Text style={styles.insightText}>총 기록: {insights.totalEntries}</Text>
                 <Text style={styles.insightText}>주요 감정: {insights.mostCommonEmotion}</Text>
+                {insights.personalityHints && (
+                  <Text style={styles.insightText}>{insights.personalityHints}</Text>
+                )}
+                {RECOMMENDATIONS[insights.mostCommonEmotion]?.[0] && (
+                  <Text style={styles.insightText}>TIP: {RECOMMENDATIONS[insights.mostCommonEmotion][0]}</Text>
+                )}
               </View>
             )}
             <TouchableOpacity style={styles.modernButton} onPress={() => navigation.navigate('EmotionStats')}>
