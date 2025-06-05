@@ -1,5 +1,5 @@
   // 실제 GPT API 호출 함수
-  const analyzeEmotionWithGPT = async (emotionText) => {
+export const analyzeEmotionWithGPT = async (emotionText) => {
     try {
       const response = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
@@ -116,3 +116,5 @@
       };
     }
   };
+
+export default analyzeEmotionWithGPT;

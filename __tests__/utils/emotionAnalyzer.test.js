@@ -27,4 +27,9 @@ describe('EmotionAnalyzer utility functions', () => {
     const trend = analyzer.calculateTrend([1, 2, 3, 4]);
     expect(trend).toBeCloseTo(1);
   });
+
+  test('calculateTrend returns 0 for insufficient data', () => {
+    expect(analyzer.calculateTrend([5])).toBe(0);
+    expect(analyzer.calculateTrend([])).toBe(0);
+  });
 });
