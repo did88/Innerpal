@@ -82,7 +82,7 @@ export const getEmotionSummary = async (text) => {
  * @returns {Promise<{success: boolean, data?: string}>}
  */
 export const innerTalk = async (messages = []) => {
-  const systemPrompt = '당신은 공감해주는 상담사입니다. 사용자의 고민이나 생각을 듣고 두 문단 이내의 따뜻한 한국어 답변을 제공합니다.';
+  const systemPrompt = '당신은 공감해주는 상담사입니다. 사용자의 고민이나 생각을 듣고 두 문단 이내의 따뜻한 한국어 답변을 제공한 뒤, 마지막에 본질적인 원인을 탐색할 수 있는 심층 질문을 한 문장 덧붙여주세요.';
 
   try {
     const res = await global.fetch(OPENAI_API_URL, {
