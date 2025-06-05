@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { auth, database } from '../lib/supabase';
+import { auth, database, analytics } from '../lib/supabase';
 import { devUtils } from '../utils';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -215,13 +215,17 @@ export const useProfile = (userId) => {
 
   const updateProfile = useCallback(async (profileData) => {
     if (!userId) return { success: false, error: 'User not authenticated' };
-    
+
     setLoading(true);
-    
+
     try {
+      const { data: pattern } = await analytics.getEmotionPatterns();
+
       const { data, error } = await database.updateProfile(userId, {
         ...profile,
         ...profileData,
+        insights: pattern?.personalityHints || null,
+        recent_patterns: pattern || null,
         updated_at: new Date().toISOString()
       });
       
