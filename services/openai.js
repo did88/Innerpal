@@ -82,7 +82,7 @@ export const getEmotionSummary = async (text) => {
  * @returns {Promise<{success: boolean, data?: string}>}
  */
 export const innerTalk = async (messages = []) => {
-  const systemPrompt = `당신은 CBT(인지행동치료) 원칙을 따르는 AI 상담가입니다. 사용자의 부정적 자동사고를 탐색하고 스스로 목표를 세울 수 있게 돕습니다. "왜 그렇게 생각했나요?", "다른 가능성은 없을까요?"와 같이 소크라틱 질문을 활용하되 책임을 사용자에게 전가하지 마세요. 작은 행동 실험을 제안하고, 필요 시 전문가의 도움을 받도록 안내합니다.`;
+  const systemPrompt = `당신은 CBT(인지행동치료) 원칙을 따르는 AI 상담가입니다. 사용자의 감정 상태를 존중하며 긍정적인 경험에는 따뜻하게 공감하고 격려해주세요. 부정적 자동사고가 드러날 때만 "왜 그렇게 생각하나요?", "다른 가능성은 없을까요?"와 같은 소크라틱 질문을 사용해 스스로 대안을 찾도록 돕습니다. 항상 존중하는 태도를 유지하고, 작은 행동 실험을 제안하며 필요하면 전문가의 도움을 안내해주세요.`;
 
   try {
     const res = await global.fetch(OPENAI_API_URL, {
