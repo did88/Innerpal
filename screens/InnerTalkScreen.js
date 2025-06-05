@@ -24,6 +24,7 @@ const InnerTalkScreen = ({ route }) => {
   const [aiReply, setAiReply] = useState(null);
   const [loading, setLoading] = useState(false);
   const [history, setHistory] = useState([]);
+  const [mode, setMode] = useState('inner');
   const scrollViewRef = useRef(null);
 
   useEffect(() => {
@@ -50,8 +51,10 @@ const InnerTalkScreen = ({ route }) => {
 
     try {
       // Perform AI reply and emotion analysis concurrently
+      const talkFn =
+        mode === 'coaching' ? openAIService.coachingTalk : openAIService.innerTalk;
       const [response, userEmotions] = await Promise.all([
-        openAIService.innerTalk(newHistory),
+        talkFn(newHistory),
         openAIService.getEmotionSummary(userThought)
       ]);
 
@@ -102,6 +105,20 @@ const InnerTalkScreen = ({ route }) => {
     >
       <SafeAreaView style={styles.container}>
       <Text style={styles.title}>내면 대화</Text>
+      <View style={styles.modeToggle}>
+        <TouchableOpacity
+          style={[styles.modeButton, mode === 'inner' && styles.modeButtonActive]}
+          onPress={() => setMode('inner')}
+        >
+          <Text style={[styles.modeText, mode === 'inner' && styles.modeTextActive]}>상담</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.modeButton, mode === 'coaching' && styles.modeButtonActive]}
+          onPress={() => setMode('coaching')}
+        >
+          <Text style={[styles.modeText, mode === 'coaching' && styles.modeTextActive]}>코칭</Text>
+        </TouchableOpacity>
+      </View>
       <ScrollView
         ref={scrollViewRef}
         style={styles.scrollView}
@@ -150,6 +167,28 @@ const styles = StyleSheet.create({
     marginTop: 16,
     marginBottom: 8,
     color: '#2D3748',
+  },
+  modeToggle: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginBottom: 8,
+    gap: 12,
+  },
+  modeButton: {
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 12,
+    backgroundColor: '#E2E8F0',
+  },
+  modeButtonActive: {
+    backgroundColor: '#4A5568',
+  },
+  modeText: {
+    fontSize: 14,
+    color: '#2D3748',
+  },
+  modeTextActive: {
+    color: '#FFFFFF',
   },
   scrollView: {
     flex: 1,
