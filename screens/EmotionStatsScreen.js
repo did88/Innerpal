@@ -35,7 +35,9 @@ const EmotionStatsScreen = () => {
 
   if (!stats) {
     return (
-      <View style={styles.center}>\n        <Text style={styles.loading}>Loading...</Text>\n      </View>
+      <View style={styles.center}>
+        <Text style={styles.loading}>Loading...</Text>
+      </View>
     );
   }
 
@@ -60,7 +62,14 @@ const EmotionStatsScreen = () => {
     <View style={styles.container}>
       <View style={styles.rangeTabs}>
         {rangeOptions.map(option => (
-          <TouchableOpacity key={option} onPress={() => setRange(option)} style={[styles.tab, range === option && styles.activeTab]}>\n            <Text style={range === option ? styles.activeTabText : styles.tabText}>{option}일</Text>
+          <TouchableOpacity
+            key={option}
+            onPress={() => setRange(option)}
+            style={[styles.tab, range === option && styles.activeTab]}
+          >
+            <Text style={range === option ? styles.activeTabText : styles.tabText}>
+              {option}일
+            </Text>
           </TouchableOpacity>
         ))}
       </View>
