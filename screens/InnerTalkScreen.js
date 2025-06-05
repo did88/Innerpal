@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   View,
   Text,
@@ -9,7 +9,8 @@ import {
   SafeAreaView,
   ActivityIndicator,
   KeyboardAvoidingView,
-  Platform
+  Platform,
+  Keyboard
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { database } from '../lib/supabase';
@@ -23,6 +24,18 @@ const InnerTalkScreen = ({ route }) => {
   const [aiReply, setAiReply] = useState(null);
   const [loading, setLoading] = useState(false);
   const [history, setHistory] = useState([]);
+  const scrollViewRef = useRef(null);
+
+  useEffect(() => {
+    scrollViewRef.current?.scrollToEnd({ animated: true });
+  }, [history]);
+
+  useEffect(() => {
+    const showSub = Keyboard.addListener('keyboardDidShow', () => {
+      scrollViewRef.current?.scrollToEnd({ animated: true });
+    });
+    return () => showSub.remove();
+  }, []);
 
   const handleSend = async () => {
     if (!thought.trim()) return;
@@ -90,6 +103,7 @@ const InnerTalkScreen = ({ route }) => {
       <SafeAreaView style={styles.container}>
       <Text style={styles.title}>내면 대화</Text>
       <ScrollView
+        ref={scrollViewRef}
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
       >
