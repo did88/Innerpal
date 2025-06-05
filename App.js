@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { LogBox } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -8,7 +9,6 @@ import { LinearGradient } from 'expo-linear-gradient';
 
 import { database } from './lib/supabase';
 import { requestPermissionsAsync } from './services/notifications';
-
 import { APP_CONFIG } from './config/app';
 import { useAuth } from './hooks';
 import { analytics } from './lib/supabase';
@@ -19,6 +19,13 @@ import InnerTalkScreen from './screens/InnerTalkScreen';
 import EmotionAnalysisScreen from './screens/EmotionAnalysisScreen';
 import EmotionResultScreen from './screens/EmotionResultScreen';
 import EmotionStatsScreen from './screens/EmotionStatsScreen';
+
+// Suppress known non-critical warnings/errors
+LogBox.ignoreLogs([
+  'expo-notifications: Android Push notifications',
+  '`expo-notifications` functionality is not fully supported in Expo Go',
+  'Supabase saveInnerTalk error:'
+]);
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
