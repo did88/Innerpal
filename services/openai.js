@@ -111,6 +111,40 @@ export const innerTalk = async (messages = []) => {
 };
 
 /**
+ * 변화 코칭 대화 생성
+ * @param {Array<{role: string, content: string}>} messages 대화 기록
+ * @returns {Promise<{success: boolean, data?: string}>}
+ */
+export const coachingTalk = async (messages = []) => {
+  const systemPrompt = `당신은 사용자가 자신의 감정을 표현하고 원인을 탐색할 수 있도록 돕는 코칭 전문가입니다. 대화는 "감정 표현 → 원인 탐색 → 변화 제안" 순서로 진행합니다. "혹시 어떤 욕구가 충족되지 않아서일까요?"와 같이 욕구를 살피는 질문을 사용하고, 사용자의 말에 "항상 그래야 한다"와 같은 고정관념이 보이면 부드럽게 알려주세요. 마지막에는 작은 행동 변화를 제안하여 대화를 마무리합니다.`;
+
+  try {
+    const res = await global.fetch(OPENAI_API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${OPENAI_API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: 'gpt-4',
+        messages: [
+          { role: 'system', content: systemPrompt },
+          ...messages,
+        ],
+        temperature: 0.7,
+      }),
+    });
+
+    const data = await res.json();
+    const reply = data?.choices?.[0]?.message?.content?.trim();
+    return reply ? { success: true, data: reply } : { success: false };
+  } catch (err) {
+    console.error('coachingTalk 오류:', err);
+    return { success: false };
+  }
+};
+
+/**
  * CBT 세션 인사이트 생성
  * @param {Object} sessionData - 세션 데이터
  * @returns {Promise<{success: boolean, insights?: string}>}
@@ -144,4 +178,9 @@ export const generateCBTInsights = async (sessionData) => {
   }
 };
 
-export default { getEmotionSummary, innerTalk, generateCBTInsights };
+export default {
+  getEmotionSummary,
+  innerTalk,
+  coachingTalk,
+  generateCBTInsights,
+};
