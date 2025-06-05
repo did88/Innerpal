@@ -8,7 +8,8 @@ import {
   ScrollView,
   Alert,
   Animated,
-  Dimensions
+  Dimensions,
+  Modal
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { emotionAnalyzer } from '../utils/emotionAnalyzer';
@@ -21,6 +22,9 @@ const EmotionAnalysisScreen = ({ navigation }) => {
   const [inputText, setInputText] = useState('');
   const [analysisResult, setAnalysisResult] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [quickPromptVisible, setQuickPromptVisible] = useState(false);
+  const [quickPromptText, setQuickPromptText] = useState('');
+  const [quickPromptInput, setQuickPromptInput] = useState('');
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
   const analyzeEmotion = () => {
@@ -66,23 +70,9 @@ const EmotionAnalysisScreen = ({ navigation }) => {
 
   const useQuickPrompt = () => {
     const randomPrompt = QUICK_PROMPTS[Math.floor(Math.random() * QUICK_PROMPTS.length)];
-    Alert.prompt(
-      '빠른 감정 체크',
-      randomPrompt,
-      [
-        { text: '취소', style: 'cancel' },
-        {
-          text: '분석하기',
-          onPress: (text) => {
-            if (text) {
-              setInputText(text);
-              setTimeout(analyzeEmotion, 100);
-            }
-          }
-        }
-      ],
-      'plain-text'
-    );
+    setQuickPromptText(randomPrompt);
+    setQuickPromptInput('');
+    setQuickPromptVisible(true);
   };
 
   const getEmotionColor = (score) => {
@@ -100,7 +90,50 @@ const EmotionAnalysisScreen = ({ navigation }) => {
   };
 
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+    <>
+      <Modal
+        visible={quickPromptVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setQuickPromptVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
+            <Text style={styles.modalTitle}>빠른 감정 체크</Text>
+            <Text style={styles.modalPrompt}>{quickPromptText}</Text>
+            <TextInput
+              style={styles.modalInput}
+              value={quickPromptInput}
+              onChangeText={setQuickPromptInput}
+              placeholder="여기에 입력하세요"
+              placeholderTextColor="#9CA3AF"
+              multiline
+            />
+            <View style={styles.modalButtons}>
+              <TouchableOpacity
+                style={styles.modalButton}
+                onPress={() => setQuickPromptVisible(false)}
+              >
+                <Text style={styles.modalButtonText}>취소</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.modalButton}
+                onPress={() => {
+                  if (quickPromptInput.trim()) {
+                    setQuickPromptVisible(false);
+                    setInputText(quickPromptInput);
+                    setTimeout(analyzeEmotion, 100);
+                  }
+                }}
+              >
+                <Text style={styles.modalButtonText}>분석하기</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       <LinearGradient
         colors={['rgba(124, 58, 237, 0.1)', 'transparent']}
         style={styles.headerGradient}
@@ -210,6 +243,7 @@ const EmotionAnalysisScreen = ({ navigation }) => {
         )}
       </View>
     </ScrollView>
+    </>
   );
 };
 
@@ -264,7 +298,35 @@ const styles = StyleSheet.create({
   },
   recommendationText: { flex: 1, fontSize: 14, color: '#374151', lineHeight: 20 },
   viewResultButton: { marginTop: 16, borderRadius: 12, overflow: 'hidden' },
-  viewResultText: { fontSize: 16, fontWeight: '600', color: 'white' }
+  viewResultText: { fontSize: 16, fontWeight: '600', color: 'white' },
+
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  modalContainer: {
+    backgroundColor: 'white',
+    borderRadius: 12,
+    padding: 20,
+    width: '80%'
+  },
+  modalTitle: { fontSize: 18, fontWeight: 'bold', color: '#1F2937', marginBottom: 12, textAlign: 'center' },
+  modalPrompt: { fontSize: 14, color: '#374151', marginBottom: 12 },
+  modalInput: {
+    backgroundColor: 'white',
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    borderRadius: 8,
+    padding: 12,
+    minHeight: 80,
+    textAlignVertical: 'top',
+    marginBottom: 12
+  },
+  modalButtons: { flexDirection: 'row', justifyContent: 'flex-end', gap: 8 },
+  modalButton: { backgroundColor: '#F3F4F6', borderRadius: 8, paddingVertical: 10, paddingHorizontal: 16 },
+  modalButtonText: { fontSize: 14, fontWeight: '600', color: '#374151' }
 });
 
 export default EmotionAnalysisScreen;
