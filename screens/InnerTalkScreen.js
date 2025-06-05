@@ -37,7 +37,7 @@ const InnerTalkScreen = ({ route }) => {
 
     try {
       // Perform AI reply and emotion analysis concurrently
-      const [response, emotions] = await Promise.all([
+      const [response, userEmotions] = await Promise.all([
         openAIService.innerTalk(newHistory),
         openAIService.getEmotionSummary(userThought)
       ]);
@@ -49,6 +49,8 @@ const InnerTalkScreen = ({ route }) => {
           : '답변을 생성할 수 없습니다. 나중에 다시 시도해주세요.'
       };
 
+      const aiEmotions = await openAIService.getEmotionSummary(aiMessage.content);
+
       setHistory([...newHistory, aiMessage]);
       setAiReply(aiMessage.content);
 
@@ -56,7 +58,8 @@ const InnerTalkScreen = ({ route }) => {
         emotion_id: initialEmotion?.id || null,
         user_input: userThought,
         ai_reply: aiMessage.content,
-        user_emotions: emotions || null
+        user_emotions: userEmotions || null,
+        ai_emotions: aiEmotions || null
       });
 
     } catch (error) {
