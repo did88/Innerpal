@@ -100,7 +100,8 @@ export const useAuth = () => {
     signIn,
     signUp,
     signOut,
-    isAuthenticated: !!session
+    isAuthenticated: !!session,
+    isAdmin: user?.user_metadata?.role === 'admin'
   };
 };
 
