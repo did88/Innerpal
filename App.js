@@ -83,14 +83,19 @@ const ProfileScreen = ({ navigation }) => {
     }
   }, [isAuthenticated]);
 
-  const onSubmit = async ({ email, password, confirmPassword }) => {
+  const onSubmit = async ({ email, password, confirmPassword, gender, birthYear }) => {
     if (mode === 'signup' && password !== confirmPassword) {
       Alert.alert('오류', '비밀번호가 일치하지 않습니다');
       return;
     }
 
-    const fn = mode === 'signup' ? signUp : signIn;
-    const { success, error } = await fn(email, password);
+    let result;
+    if (mode === 'signup') {
+      result = await signUp(email, password, { gender, birth_year: birthYear });
+    } else {
+      result = await signIn(email, password);
+    }
+    const { success, error } = result;
     if (!success) {
       Alert.alert('오류', error || '문제가 발생했습니다');
     } else {
@@ -170,20 +175,49 @@ const ProfileScreen = ({ navigation }) => {
                 )}
               />
               {mode === 'signup' && (
-                <Controller
-                  control={control}
-                  name="confirmPassword"
-                  defaultValue=""
-                  render={({ field: { onChange, value } }) => (
-                    <TextInput
-                      style={styles.textInput}
-                      placeholder="비밀번호 확인"
-                      secureTextEntry
-                      value={value}
-                      onChangeText={onChange}
-                    />
-                  )}
-                />
+                <>
+                  <Controller
+                    control={control}
+                    name="confirmPassword"
+                    defaultValue=""
+                    render={({ field: { onChange, value } }) => (
+                      <TextInput
+                        style={styles.textInput}
+                        placeholder="비밀번호 확인"
+                        secureTextEntry
+                        value={value}
+                        onChangeText={onChange}
+                      />
+                    )}
+                  />
+                  <Controller
+                    control={control}
+                    name="gender"
+                    defaultValue=""
+                    render={({ field: { onChange, value } }) => (
+                      <TextInput
+                        style={styles.textInput}
+                        placeholder="성별"
+                        value={value}
+                        onChangeText={onChange}
+                      />
+                    )}
+                  />
+                  <Controller
+                    control={control}
+                    name="birthYear"
+                    defaultValue=""
+                    render={({ field: { onChange, value } }) => (
+                      <TextInput
+                        style={styles.textInput}
+                        placeholder="생년(YYYY)"
+                        keyboardType="numeric"
+                        value={value}
+                        onChangeText={onChange}
+                      />
+                    )}
+                  />
+                </>
               )}
               <TouchableOpacity style={styles.modernButton} onPress={handleSubmit(onSubmit)} disabled={loading}>
                 <LinearGradient colors={['#7C3AED', '#A855F7']} style={styles.buttonGradient}>
