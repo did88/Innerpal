@@ -19,6 +19,7 @@ import InnerTalkScreen from './screens/InnerTalkScreen';
 import EmotionAnalysisScreen from './screens/EmotionAnalysisScreen';
 import EmotionResultScreen from './screens/EmotionResultScreen';
 import EmotionStatsScreen from './screens/EmotionStatsScreen';
+import AdminDashboardScreen from './screens/AdminDashboardScreen';
 
 // Suppress known non-critical warnings/errors
 LogBox.ignoreLogs([
@@ -134,6 +135,11 @@ const ProfileScreen = ({ navigation }) => {
             <TouchableOpacity style={styles.modernButton} onPress={() => navigation.navigate('EmotionStats')}>
               <LinearGradient colors={['#6366F1', '#8B5CF6']} style={styles.buttonGradient}>
                 <Text style={styles.buttonText}>통계 상세 보기</Text>
+              </LinearGradient>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.modernButton} onPress={() => navigation.navigate('AdminDashboard')}>
+              <LinearGradient colors={['#10B981', '#6EE7B7']} style={styles.buttonGradient}>
+                <Text style={styles.buttonText}>Admin Dashboard</Text>
               </LinearGradient>
             </TouchableOpacity>
             <TouchableOpacity style={styles.modernButton} onPress={signOut} disabled={loading}>
@@ -306,6 +312,7 @@ export default function App() {
           <Stack.Screen name="EmotionAnalysis" component={EmotionAnalysisScreen} options={{ headerShown: true, title: '감정 분석', headerStyle: { backgroundColor: '#FEFCF0', shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.1, shadowRadius: 4, elevation: 4 }, headerTitleStyle: { color: '#1F2937', fontWeight: '600', fontSize: 18 }, headerTintColor: '#7C3AED' }} />
           <Stack.Screen name="EmotionResultScreen" component={EmotionResultScreen} options={{ headerShown: true, title: '감정 결과', headerStyle: { backgroundColor: '#FEFCF0' }, headerTintColor: '#7C3AED', headerTitleStyle: { fontWeight: '600', fontSize: 18 } }} />
           <Stack.Screen name="EmotionStats" component={EmotionStatsScreen} options={{ headerShown: true, title: '감정 통계', headerStyle: { backgroundColor: '#FEFCF0' }, headerTintColor: '#7C3AED', headerTitleStyle: { fontWeight: '600', fontSize: 18 } }} />
+          <Stack.Screen name="AdminDashboard" component={AdminDashboardScreen} options={{ headerShown: true, title: 'Admin Dashboard', headerStyle: { backgroundColor: '#FEFCF0' }, headerTintColor: '#7C3AED', headerTitleStyle: { fontWeight: '600', fontSize: 18 } }} />
         </Stack.Navigator>
       </NavigationContainer>
     </View>
