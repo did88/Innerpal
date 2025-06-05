@@ -30,24 +30,30 @@ const InsightsScreen = ({ route }) => {
 
     const userMessage = { role: 'user', content: userThought };
     const newHistory = [...history, userMessage];
+    setHistory(newHistory);
 
     try {
-      const response = await openAIService.innerTalk(newHistory);
+      const [response, emotions] = await Promise.all([
+        openAIService.innerTalk(newHistory),
+        openAIService.getEmotionSummary(userThought)
+      ]);
+
       const aiMessage = {
         role: 'assistant',
-        content: response.success ? response.reply : '답변을 생성할 수 없습니다. 나중에 다시 시도해주세요.'
+        content: response.success && response.data
+          ? response.data
+          : '답변을 생성할 수 없습니다. 나중에 다시 시도해주세요.'
       };
 
       setHistory([...newHistory, aiMessage]);
       setAiReply(aiMessage.content);
 
-      if (initialEmotion?.id) {
-        await database.saveInnerTalk({
-          emotion_id: initialEmotion.id,
-          user_input: userThought,
-          ai_reply: aiMessage.content
-        });
-      }
+      await database.saveInnerTalk({
+        emotion_id: initialEmotion?.id || null,
+        user_input: userThought,
+        ai_reply: aiMessage.content,
+        user_emotions: emotions || null
+      });
 
     } catch (error) {
       console.warn('InnerTalk 오류:', error);

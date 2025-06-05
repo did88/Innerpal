@@ -32,9 +32,16 @@ const InnerTalkScreen = ({ route }) => {
 
     const userMessage = { role: 'user', content: userThought };
     const newHistory = [...history, userMessage];
+    // Show user message immediately
+    setHistory(newHistory);
 
     try {
-      const response = await openAIService.innerTalk(newHistory);
+      // Perform AI reply and emotion analysis concurrently
+      const [response, emotions] = await Promise.all([
+        openAIService.innerTalk(newHistory),
+        openAIService.getEmotionSummary(userThought)
+      ]);
+
       const aiMessage = {
         role: 'assistant',
         content: response.success && response.data
@@ -45,13 +52,12 @@ const InnerTalkScreen = ({ route }) => {
       setHistory([...newHistory, aiMessage]);
       setAiReply(aiMessage.content);
 
-      if (initialEmotion?.id) {
-        await database.saveInnerTalk({
-          emotion_id: initialEmotion.id,
-          user_input: userThought,
-          ai_reply: aiMessage.content
-        });
-      }
+      await database.saveInnerTalk({
+        emotion_id: initialEmotion?.id || null,
+        user_input: userThought,
+        ai_reply: aiMessage.content,
+        user_emotions: emotions || null
+      });
 
     } catch (error) {
       console.warn('InnerTalk 오류:', error);
