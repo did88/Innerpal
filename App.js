@@ -20,6 +20,8 @@ import InnerTalkScreen from './screens/InnerTalkScreen';
 import EmotionAnalysisScreen from './screens/EmotionAnalysisScreen';
 import EmotionResultScreen from './screens/EmotionResultScreen';
 import EmotionStatsScreen from './screens/EmotionStatsScreen';
+import AdminScreen from './screens/AdminScreen';
+import { ADMIN_EMAIL } from './config/admin';
 
 // Suppress known non-critical warnings/errors
 LogBox.ignoreLogs([
@@ -103,7 +105,11 @@ const ProfileScreen = ({ navigation }) => {
 
     let result;
     if (mode === 'signup') {
-      result = await signUp(email, password, { gender, birth_year: birthYear });
+      const metadata = { gender, birth_year: birthYear };
+      if (email === ADMIN_EMAIL) {
+        metadata.role = 'admin';
+      }
+      result = await signUp(email, password, metadata);
     } else {
       result = await signIn(email, password);
     }
@@ -251,6 +257,7 @@ const ProfileScreen = ({ navigation }) => {
 };
 
 function MainTabs() {
+  const { isAdmin } = useAuth();
   return (
     <Tab.Navigator screenOptions={{
       tabBarStyle: {
@@ -274,6 +281,9 @@ function MainTabs() {
       <Tab.Screen name="Home" component={HomeScreen} options={{ title: '홈', tabBarIcon: ({ focused }) => (<TabIcon focused={focused} emoji="🏡" activeEmoji="🏠" />) }} />
       <Tab.Screen name="InnerTalk" component={InnerTalkScreen} options={{ title: '대화', tabBarIcon: ({ focused }) => (<TabIcon focused={focused} emoji="💬" activeEmoji="💭" />) }} />
       <Tab.Screen name="Insights" component={InsightsScreen} options={{ title: '분석', tabBarIcon: ({ focused }) => (<TabIcon focused={focused} emoji="📈" activeEmoji="📊" />) }} />
+      {isAdmin && (
+        <Tab.Screen name="Admin" component={AdminScreen} options={{ title: '관리', tabBarIcon: ({ focused }) => (<TabIcon focused={focused} emoji="🛠" activeEmoji="⚙️" />) }} />
+      )}
       <Tab.Screen name="Profile" component={ProfileScreen} options={{ title: '프로필', tabBarIcon: ({ focused }) => (<TabIcon focused={focused} emoji="👥" activeEmoji="👤" />) }} />
     </Tab.Navigator>
   );
