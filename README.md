@@ -96,6 +96,10 @@ npm install
 npx expo start
 ```
 
+> ⚠️ **Expo SDK 53 호환성**
+> - `package.json`의 `react`와 `react-dom` 버전은 `18.x`로 유지해야 합니다.
+> - `app.json`과 `android/gradle.properties`의 `newArchEnabled` 옵션은 기본값으로 `false`가 설정되어 있습니다. 모든 의존성이 새 아키텍처를 지원할 때만 `true`로 변경하세요.
+
 ### 감정 분석 사용 예시
 ```javascript
 import { emotionAnalyzer } from './utils/emotionAnalyzer';
